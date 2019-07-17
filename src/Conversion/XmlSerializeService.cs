@@ -11,6 +11,7 @@ namespace Enjaxel.Conversion
     /// </summary>
     public static class XmlSerializeService
     {
+        #region Deserialize
         /// <summary>
         /// XmlのStream → T型Entityに変換します
         /// </summary>
@@ -155,7 +156,9 @@ namespace Enjaxel.Conversion
         {
             return XmlDeserialize<T>(fileInfo, Encoding.UTF8);
         }
+        #endregion
 
+        #region Serialize
         /// <summary>
         /// T型Entity → Xml文字列に変換するメソッド
         /// </summary>
@@ -206,5 +209,6 @@ namespace Enjaxel.Conversion
         {
             return XmlSerialize(target, Encoding.UTF8);
         }
+        #endregion
     }
 }

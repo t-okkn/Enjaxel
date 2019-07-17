@@ -105,7 +105,6 @@ namespace Enjaxel.Conversion
         /// <param name="fileInfo"> JsonテキストファイルのFileInfo </param>
         /// <param name="encode"> 文字コード </param>
         /// <returns> T型Entity </returns>
-        /// <remarks> 戻り値はNullの可能性あり </remarks>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
@@ -161,7 +160,6 @@ namespace Enjaxel.Conversion
         /// <param name="target"> T型Entity </param>
         /// <param name="encode"> 文字コード </param>
         /// <returns> Json文字列 </returns>
-        /// <remarks> エラーの場合は空文字 </remarks>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidDataContractException"></exception>
@@ -197,7 +195,6 @@ namespace Enjaxel.Conversion
         /// </summary>
         /// <param name="target"> T型Entity </param>
         /// <returns> Json文字列 </returns>
-        /// <remarks> エラーの場合は空文字 </remarks>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidDataContractException"></exception>
