@@ -5,7 +5,7 @@ namespace Enjaxel.Conversion
     /// <summary>
     /// 型変換の機能を提供するクラス
     /// </summary>
-    public static class TypeConversion
+    public static class TypeConvertService
     {
         /// <summary>
         /// 型名（組み込み型）に即したデータに変換するメソッド

@@ -68,11 +68,11 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpc.cs" />
     <Compile Include="Communication\NamedPipe\NamedPipeIpcEventArgs.cs" />
     <Compile Include="Constant\Prm.cs" />
-    <Compile Include="Conversion\DateTimeConversion.cs" />
-    <Compile Include="Conversion\DBConversion.cs" />
+    <Compile Include="Conversion\DateTimeConvertService.cs" />
+    <Compile Include="Conversion\DataConvertService.cs" />
     <Compile Include="Conversion\XmlSerializeService.cs" />
     <Compile Include="Conversion\JsonSerializeService.cs" />
-    <Compile Include="Conversion\TypeConversion.cs" />
+    <Compile Include="Conversion\TypeConvertService.cs" />
     <Compile Include="Generator\EntityGenerator.cs" />
     <Compile Include="Linq\EnumCombination.cs" />
     <Compile Include="Logging\EasyEventLog.cs" />

@@ -6,7 +6,7 @@ namespace Enjaxel.Conversion
     /// <summary>
     /// DateTime型とString型を相互変換するクラス
     /// </summary>
-    public static class DateTimeConversion
+    public static class DateTimeConvertService
     {
         /// <summary> 日時形式文字列に期待するフォーマット </summary>
         private static string[] ExpectedFormats { get; }
@@ -14,7 +14,7 @@ namespace Enjaxel.Conversion
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        static DateTimeConversion()
+        static DateTimeConvertService()
         {
             ExpectedFormats = new string[] {
                 "yyyyMMddHHmmss",

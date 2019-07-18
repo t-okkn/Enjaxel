@@ -9,9 +9,9 @@ using System.Reflection;
 namespace Enjaxel.Conversion
 {
     /// <summary>
-    /// DataBaseから取得した値に関する変換機能を提供します
+    /// Dataに関する変換機能を提供します
     /// </summary>
-    public static class DBConversion
+    public static class DataConvertService
     {
         /// <summary>
         /// DataTable => List(Of T型Entity) への変換メソッド
