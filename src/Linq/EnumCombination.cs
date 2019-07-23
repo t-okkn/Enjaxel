@@ -17,7 +17,7 @@ namespace Enjaxel.Linq
         /// <param name="withRepetition"> 重複を許可するかどうかのフラグ </param>
         /// <returns></returns>
         public static IEnumerable<T[]> Combination<T>
-            (IEnumerable<T> items, int pickUp, bool withRepetition)
+            (this IEnumerable<T> items, int pickUp, bool withRepetition)
         {
             if (pickUp == 1)
             {
