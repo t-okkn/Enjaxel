@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -28,7 +29,9 @@ namespace Enjaxel.Conversion
             {
                 // Rowの全行をT型Entityに変換
                 foreach (DataRow row in dt.AsEnumerable())
+                {
                     resTList.Add(row.ToEntity<T>());
+                }
             }
             catch (Exception)
             {
@@ -84,8 +87,10 @@ namespace Enjaxel.Conversion
                         nullable_flag = true;
                     }
                     else
+                    {
                         // Nullableの型でないときは普通にPropertyTypeから取得
                         p_type_code = Type.GetTypeCode(prop.PropertyType);
+                    }
 
                     // カラム属性値が設定されていない、またはカラム属性値に対応するカラムが存在しない場合
                     // Propertyは、Property名からデータの取得を試みる
@@ -104,12 +109,18 @@ namespace Enjaxel.Conversion
                                 prop.SetValue(resT, value);
                             }
                             else
+                            {
                                 // DataRowの中から値を取得して、DBNullの時で
                                 // Propertyの型がStringのときだけString.Emptyを書き込み
                                 if (p_type_code == TypeCode.String)
-                                prop.SetValue(resT, string.Empty);
-                            else if (nullable_flag)
-                                prop.SetValue(resT, null);
+                                {
+                                    prop.SetValue(resT, string.Empty);
+                                } 
+                                else if (nullable_flag)
+                                {
+                                    prop.SetValue(resT, null);
+                                }
+                            }
                         }
                     }
                     else if (dr[column_atrb.Name] != DBNull.Value)
@@ -122,29 +133,38 @@ namespace Enjaxel.Conversion
 
                         // カラムの型がNullableなら
                         if (column_type.Name.Contains("Nullable"))
+                        {
                             // GetUnderlyingTypeで元の型を取得
                             column_type = Nullable.GetUnderlyingType(column_type);
+                        }
 
                         // ↓EntityのPropertyにDataRowの値をセットする↓
                         // Propertyの型がStringだが、カラムの型がString以外の時
                         if (p_type_code == TypeCode.String &&
                                  column_type.Name != "String")
-
+                        {
                             // String型に変換して値を詰める
                             prop.SetValue(resT, dr.Field<string>(column_atrb.Name));
+                        }
                         else
+                        {
                             // それ以外のときは普通に詰め込む
                             prop.SetValue
                                 (resT, dr[column_atrb.Name].ConvertValue(p_type_code));
+                        } 
                     }
                     else if (dr[column_atrb.Name] != DBNull.Value)
                     {
                         // DataRowの中から値を取得して、DBNullの時で
                         // Propertyの型がStringのときだけString.Emptyを書き込み
                         if (p_type_code == TypeCode.String)
+                        {
                             prop.SetValue(resT, string.Empty);
+                        }  
                         else if (nullable_flag)
+                        {
                             prop.SetValue(resT, null);
+                        }
                     }
                 }
             }
@@ -170,7 +190,9 @@ namespace Enjaxel.Conversion
 
             // EntityのListに何も入っていなければ終了
             if (tList.Count == 0)
+            {
                 return table;
+            }
 
             try
             {
@@ -178,8 +200,10 @@ namespace Enjaxel.Conversion
                 table.Columns.AddRange(tList[0].ToDataColumns());
 
                 foreach (T item in tList)
+                {
                     // DataTableにDataRowを追加
                     table.Rows.Add(item.ToDataRow(ref table));
+                }
             }
             catch (Exception)
             {
@@ -207,18 +231,23 @@ namespace Enjaxel.Conversion
                 foreach (PropertyInfo prop in properties)
                 {
                     // Propertyに紐付いた属性値を取得
-                    ColumnAttribute column_atrb = prop.GetCustomAttribute<ColumnAttribute>();
+                    ColumnAttribute column_atrb =
+                        prop.GetCustomAttribute<ColumnAttribute>();
 
                     // Propertyの型を入れるためのローカル変数
                     Type p_type = null;
 
                     // Nullableの型の時
                     if (prop.PropertyType.Name.Contains("Nullable"))
+                    {
                         // GetUnderlyingTypeから型を取得する
                         p_type = Nullable.GetUnderlyingType(prop.PropertyType);
+                    }
                     else
+                    {
                         // Nullableの型でないときは普通にPropertyTypeから取得
                         p_type = prop.PropertyType;
+                    }
 
                     // カラム属性値がNullでない場合、カラム属性値をカラム名にする
                     // そうでない場合はProperty名をカラム名にする
@@ -255,15 +284,20 @@ namespace Enjaxel.Conversion
                 foreach (PropertyInfo prop in properties)
                 {
                     // Propertyに紐付いた属性値を取得
-                    ColumnAttribute column_atrb = prop.GetCustomAttribute<ColumnAttribute>();
+                    ColumnAttribute column_atrb =
+                        prop.GetCustomAttribute<ColumnAttribute>();
 
                     // カラム属性値がNullでない場合
                     if (column_atrb != null)
+                    {
                         // カラム属性値のカラムにデータを登録
                         row[column_atrb.Name] = prop.GetValue(entity) ?? DBNull.Value;
+                    }
                     else
+                    {
                         // そうでない場合はProperty名のカラムにデータを登録
                         row[prop.Name] = prop.GetValue(entity) ?? DBNull.Value;
+                    }
                 }
             }
             catch (Exception)
@@ -291,7 +325,8 @@ namespace Enjaxel.Conversion
                 foreach (PropertyInfo prop in properties)
                 {
                     // Propertyに紐付いた属性値を取得
-                    ColumnAttribute column_atrb = prop.GetCustomAttribute<ColumnAttribute>();
+                    ColumnAttribute column_atrb =
+                        prop.GetCustomAttribute<ColumnAttribute>();
 
                     object value = new object();
                     Type v_type = prop.PropertyType;
@@ -302,14 +337,12 @@ namespace Enjaxel.Conversion
                     {
                         // GetUnderlyingTypeで元の型を取得
                         v_type = Nullable.GetUnderlyingType(v_type);
-
-                        if (!prop_value.HasValue)
-                            value = DBNull.Value;
-                        else
-                            value = prop_value;
+                        value = prop_value.HasValue ? prop_value : DBNull.Value;
                     }
                     else
+                    {
                         value = prop_value;
+                    }
 
                     var param = new SqlParameter()
                     {
