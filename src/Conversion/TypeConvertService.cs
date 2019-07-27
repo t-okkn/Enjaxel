@@ -37,11 +37,7 @@ namespace Enjaxel.Conversion
             DateTime v_date = DateTime.MinValue;
 
             // DBNull値フラグ
-            bool dbnull_flag = false;
-
-            // NullかDBNullならNull値フラグを立てる
-            if (value == DBNull.Value)
-                dbnull_flag = true;
+            bool dbnull_flag = value == DBNull.Value ? true : false;
 
             try
             {
@@ -150,11 +146,7 @@ namespace Enjaxel.Conversion
             Type t_type = typeof(T);
 
             // DBNull値フラグ
-            bool dbnull_flag = false;
-
-            // DBNullならNull値フラグを立てる
-            if (value == DBNull.Value)
-                dbnull_flag = true;
+            bool dbnull_flag = value == DBNull.Value ? true : false;
 
             try
             {
@@ -281,7 +273,9 @@ namespace Enjaxel.Conversion
                 // プリミティブ型の中でIntPtrかUIntPtrでなければTrue
                 if (!(researchType.Equals(typeof(IntPtr)) &&
                       researchType.Equals(typeof(UIntPtr))))
+                {
                     result = true;
+                }
             }
             else
             {
@@ -289,7 +283,9 @@ namespace Enjaxel.Conversion
 
                 // StringかDecimalであればTrue
                 if (r_type_code == TypeCode.String || r_type_code == TypeCode.Decimal)
+                {
                     result = true;
+                }
             }
 
             return result;
