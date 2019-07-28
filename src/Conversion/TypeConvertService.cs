@@ -8,7 +8,7 @@ namespace Enjaxel.Conversion
     public static class TypeConvertService
     {
         /// <summary>
-        /// 型名（組み込み型）に即したデータに変換するメソッド
+        /// 型名（組み込み型）に即したデータに変換します
         /// </summary>
         /// <param name="typeCode"> オブジェクト型 </param>
         /// <param name="value"> 変換する値 </param>
@@ -131,7 +131,7 @@ namespace Enjaxel.Conversion
         }
 
         /// <summary>
-        /// 型名（組み込み型）に即したデータに変換するメソッド
+        /// 型名（組み込み型）に即したデータに変換します
         /// </summary>
         /// <typeparam name="T"> 変換先の型（組み込み型） </typeparam>
         /// <param name="value"> 変換する値 </param>
@@ -260,7 +260,7 @@ namespace Enjaxel.Conversion
         }
 
         /// <summary>
-        /// Object型を除く組み込み型かどうかを判定するメソッド
+        /// Object型を除く組み込み型かどうかを判定します
         /// </summary>
         /// <param name="researchType"></param>
         /// <returns> 組み込み型かどうかを示すbool値 </returns>

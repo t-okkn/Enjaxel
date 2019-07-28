@@ -1,6 +1,8 @@
 ﻿using Enjaxel.Constant;
+using System.Collections;
+using System.ComponentModel;
 
-namespace Enjaxel.Config
+namespace Enjaxel.TextParser.Config
 {
     /// <summary>
     /// コンフィグの内容を格納するインターフェース
@@ -8,7 +10,7 @@ namespace Enjaxel.Config
     public interface IConfig
     {
         /// <summary> コンフィグの種別 </summary>
-        ConfigType Type { get; set; }
+        ConfigType Type { get; }
 
         /// <summary>
         /// コンフィグをファイルから読み取り、コンフィグの内容を返します

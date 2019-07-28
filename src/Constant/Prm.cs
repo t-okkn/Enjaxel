@@ -6,8 +6,8 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Enjaxel.TextParser.Config;
 using Enjaxel.Communication;
+using Enjaxel.TextParser.Config;
 
 namespace Enjaxel.Constant
 {

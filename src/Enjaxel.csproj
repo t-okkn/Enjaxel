@@ -59,7 +59,8 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpcClient.cs" />
     <Compile Include="Communication\NetworkTool.cs" />
     <Compile Include="Communication\SocketCom\TCPSocketServerBase.cs" />
-    <Compile Include="Config\IConfig.cs" />
+    <Compile Include="TextParser\Config\CsvContents.cs" />
+    <Compile Include="TextParser\Config\IConfig.cs" />
     <Compile Include="Constant\GlobalEnum.cs" />
     <Compile Include="Constant\IEnvironment.cs" />
     <Compile Include="Constant\ISQLConstant.cs" />
@@ -68,8 +69,15 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpc.cs" />
     <Compile Include="Communication\NamedPipe\NamedPipeIpcEventArgs.cs" />
     <Compile Include="Constant\Prm.cs" />
+    <Compile Include="TextParser\CsvReader.cs" />
+    <Compile Include="TextParser\HeaderAttribute.cs" />
+    <Compile Include="TextParser\ITextParserConfiguration.cs" />
     <Compile Include="Conversion\DateTimeConvertService.cs" />
     <Compile Include="Conversion\DataConvertService.cs" />
+    <Compile Include="TextParser\MappingObject.cs" />
+    <Compile Include="TextParser\NotMatchNumberOfFielsException.cs" />
+    <Compile Include="TextParser\TextParseException.cs" />
+    <Compile Include="TextParser\TextParser.cs" />
     <Compile Include="Conversion\XmlSerializeService.cs" />
     <Compile Include="Conversion\JsonSerializeService.cs" />
     <Compile Include="Conversion\TypeConvertService.cs" />
