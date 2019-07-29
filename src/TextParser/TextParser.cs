@@ -198,6 +198,12 @@ namespace Enjaxel.TextParser
         /// </summary>
         /// <param name="contents"> 元データ </param>
         /// <returns> CSVのフィールドデータ群 </returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="RegexMatchTimeoutException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="TextParseException"></exception>
         internal IEnumerable<string[]> ParseCsv(IEnumerable<string> contents)
         {
             string stack = string.Empty;
@@ -260,6 +266,11 @@ namespace Enjaxel.TextParser
         /// </summary>
         /// <param name="input"> 区切り文字で区切られた各データ </param>
         /// <returns> CSVのフィールドデータ </returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="RegexMatchTimeoutException"></exception>
         private string[] GetCsvFieldData(ref string[] input)
         {
             // ローカル変数を宣言
@@ -339,6 +350,8 @@ namespace Enjaxel.TextParser
         /// </summary>
         /// <param name="input"> 入力文字列 </param>
         /// <returns> 文字列内に含まれているダブルクォーテーションの数 </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OverflowException"></exception>
         private int CountDoubleQuotes(string input)
         {
             return input.Where((x) => x == '"').Count();

@@ -75,6 +75,10 @@
     <Compile Include="Conversion\DateTimeConvertService.cs" />
     <Compile Include="Conversion\DataConvertService.cs" />
     <Compile Include="TextParser\MappingObject.cs" />
+    <Compile Include="FailedMappingException.cs" />
+    <Compile Include="TextParser\DuplicateSectionException.cs" />
+    <Compile Include="TextParser\DuplicateFieldException.cs" />
+    <Compile Include="TextParser\DuplicateHeaderException.cs" />
     <Compile Include="TextParser\NotMatchNumberOfFielsException.cs" />
     <Compile Include="TextParser\TextParseException.cs" />
     <Compile Include="TextParser\TextParser.cs" />

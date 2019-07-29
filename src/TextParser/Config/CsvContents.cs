@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
@@ -23,6 +24,7 @@ namespace Enjaxel.TextParser.Config
         /// <summary>
         /// CSVの内容を抽象的に保持します
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public CsvContents(IList<string> Headers,
                            IList<IReadOnlyDictionary<string, string>> Contents)
         {
@@ -35,7 +37,7 @@ namespace Enjaxel.TextParser.Config
         /// <summary>
         /// コンフィグを読み込みます
         /// </summary>
-        /// <param name="configPath"></param>
+        /// <param name="configPath"> コンフィグファイルのパス </param>
         /// <returns></returns>
         public IConfig ReadConfig(string configPath)
         {
@@ -72,6 +74,28 @@ namespace Enjaxel.TextParser.Config
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// CsvContentsの任意の列情報を文字列として表します
+        /// </summary>
+        /// <param name="row"> 列番号 </param>
+        /// <returns></returns>
+        public string ToString(int row)
+        {
+            string line = string.Empty;
+
+            if (Contents.Count > row)
+            {
+                foreach (var c in Contents[row])
+                {
+                    line += $"[{c.Key}] => [{c.Value}] | ";
+                }
+
+                line = line.Remove(line.Length - 3);
+            }
+
+            return line;
         }
     }
 }

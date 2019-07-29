@@ -12,7 +12,7 @@ namespace Enjaxel.TextParser
         public string Name { get; set; }
 
         /// <summary>
-        /// コンストラクタ
+        /// ヘッダーを紐付けるための属性
         /// </summary>
         public HeaderAttribute(string Name)
         {

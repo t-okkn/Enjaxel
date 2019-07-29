@@ -20,7 +20,7 @@ namespace Enjaxel.TextParser
         internal bool IsNullable { get; set; }
 
         /// <summary>
-        /// コンストラクタ
+        /// マッピング時に使用します
         /// </summary>
         internal MappingObject()
         {
