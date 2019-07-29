@@ -354,7 +354,7 @@ namespace Enjaxel.TextParser
         /// <exception cref="OverflowException"></exception>
         private int CountDoubleQuotes(string input)
         {
-            return input.Where((x) => x == '"').Count();
+            return input.Length - input.Replace(@"""", "").Length;
         }
     }
 }

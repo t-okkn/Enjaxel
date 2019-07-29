@@ -21,7 +21,7 @@ namespace Enjaxel.TextParser
         private List<string> Headers { get; set; }
 
         /// <summary> コンテンツ </summary>
-        private List<IReadOnlyDictionary<string, string>> Contents { get; set; }
+        private List<IReadOnlyList<string>> Contents { get; set; }
 
         /// <summary> フィールド前後の空白をトリムするかどうかのフラグ </summary>
         public new bool TrimWhiteSpace { get; }
@@ -168,7 +168,7 @@ namespace Enjaxel.TextParser
         private void Init()
         {
             Headers = new List<string>();
-            Contents = new List<IReadOnlyDictionary<string, string>>();
+            Contents = new List<IReadOnlyList<string>>();
 
             if (ThrowError)
             {
@@ -213,7 +213,7 @@ namespace Enjaxel.TextParser
             {
                 foreach (string[] seq in ParseCsv(sequence))
                 {
-                    var data = new Dictionary<string, string>(Headers.Count);
+                    var data = new List<string>(Headers.Count);
 
                     if (first_flag)
                     {
@@ -257,10 +257,10 @@ namespace Enjaxel.TextParser
                             for (int i = 0; i < seq.Length; i++)
                             {
                                 Headers.Add("Data" + (i + 1).ToString());
-                                data.Add(Headers[i], seq[i]);
+                                data.Add(seq[i]);
                             }
 
-                            Contents.Add(new ReadOnlyDictionary<string, string>(data));
+                            Contents.Add(new ReadOnlyCollection<string>(data));
                         }
 
                         first_flag = false;
@@ -307,10 +307,10 @@ namespace Enjaxel.TextParser
                                 }
                             }
 
-                            data.Add(Headers[i], insert_str);
+                            data.Add(insert_str);
                         }
 
-                        Contents.Add(new ReadOnlyDictionary<string, string>(data));
+                        Contents.Add(new ReadOnlyCollection<string>(data));
                     }
                 }
             }
@@ -490,7 +490,7 @@ namespace Enjaxel.TextParser
                     foreach (var map in maps)
                     {
                         // コンテンツから値を取得
-                        string str = ctn[Headers[map.Number]];
+                        string str = ctn[map.Number];
 
                         if (map.ObjectType.Equals(typeof(string)))
                         {
@@ -544,18 +544,18 @@ namespace Enjaxel.TextParser
 
             try
             {
-                foreach (string header in Headers)
+                for (int i = 0; i < Headers.Count; i++)
                 {
-                    dt.Columns.Add(new DataColumn(header, typeof(string)));
+                    dt.Columns.Add(new DataColumn(Headers[i], typeof(string)));
                 }
 
                 foreach (var ctn in Contents)
                 {
                     DataRow dr = dt.NewRow();
 
-                    foreach (var pair in ctn)
+                    for (int i = 0; i < Headers.Count; i++)
                     {
-                        dr[pair.Key] = pair.Value;
+                        dr[i] = ctn[i];
                     }
 
                     dt.Rows.Add(dr);

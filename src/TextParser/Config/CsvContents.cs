@@ -19,19 +19,19 @@ namespace Enjaxel.TextParser.Config
         public IReadOnlyList<string> Headers { get; }
 
         /// <summary> コンテンツ </summary>
-        public IReadOnlyList<IReadOnlyDictionary<string, string>> Contents { get; }
+        public IReadOnlyList<IReadOnlyList<string>> Contents { get; }
 
         /// <summary>
         /// CSVの内容を抽象的に保持します
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         public CsvContents(IList<string> Headers,
-                           IList<IReadOnlyDictionary<string, string>> Contents)
+                           IList<IReadOnlyList<string>> Contents)
         {
             Type = ConfigType.CSV;
             this.Headers = new ReadOnlyCollection<string>(Headers);
             this.Contents =
-                new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(Contents);
+                new ReadOnlyCollection<IReadOnlyList<string>>(Contents);
         }
 
         /// <summary>
@@ -61,13 +61,13 @@ namespace Enjaxel.TextParser.Config
             sb.AppendLine($"ヘッダー：[{string.Join("], [", Headers)}]");
             sb.AppendLine();
 
-            foreach (var c in Contents)
+            foreach (var ctn in Contents)
             {
                 string line = string.Empty;
 
-                foreach (var pair in c)
+                for (int i = 0; i < Headers.Count; i++)
                 {
-                    line += $"[{pair.Key}] => [{pair.Value}] | ";
+                    line += $"[{Headers[i]}] => [{ctn[i]}] | ";
                 }
 
                 sb.AppendLine(line.Remove(line.Length - 3));
@@ -87,9 +87,9 @@ namespace Enjaxel.TextParser.Config
 
             if (Contents.Count > row)
             {
-                foreach (var c in Contents[row])
+                for (int i = 0; i < Headers.Count; i++)
                 {
-                    line += $"[{c.Key}] => [{c.Value}] | ";
+                    line += $"[{Headers[i]}] => [{Contents[row][i]}] | ";
                 }
 
                 line = line.Remove(line.Length - 3);
