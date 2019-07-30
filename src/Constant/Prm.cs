@@ -47,7 +47,5 @@ namespace Enjaxel.Constant
             MyName = assembly.GetName().Name;
             MyIPAddress = NetworkTools.GetIpv4Address();
         }
-
-
     }
 }

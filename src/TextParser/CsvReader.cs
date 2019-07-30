@@ -182,6 +182,11 @@ namespace Enjaxel.TextParser
                     throw new ArgumentException
                         ("区切り文字にnull文字は指定できません。");
                 }
+                else if (Delimiter == '\r' || Delimiter == '\n')
+                {
+                    throw new ArgumentException
+                        ("区切り文字に改行コードは指定できません。");
+                }
             }
             else
             {
@@ -208,6 +213,9 @@ namespace Enjaxel.TextParser
         {
             int response = 0;
             bool first_flag = true;
+
+            // コンテンツに何かデータがあれば削除
+            if (Contents.Count > 0) { Clear(); }
 
             try
             {
@@ -567,6 +575,15 @@ namespace Enjaxel.TextParser
             }
 
             return dt;
+        }
+
+        /// <summary>
+        /// CSVから読み込んだ一時データを削除します
+        /// </summary>
+        public void Clear()
+        {
+            Headers.Clear();
+            Contents.Clear();
         }
         #endregion
 
