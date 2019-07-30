@@ -71,6 +71,7 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpcEventArgs.cs" />
     <Compile Include="Constant\Prm.cs" />
     <Compile Include="TextParser\CsvReader.cs" />
+    <Compile Include="TextParser\CsvWriter.cs" />
     <Compile Include="TextParser\HeaderAttribute.cs" />
     <Compile Include="TextParser\ITextParserConfiguration.cs" />
     <Compile Include="Conversion\DateTimeConvertService.cs" />
