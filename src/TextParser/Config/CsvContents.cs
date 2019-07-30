@@ -8,7 +8,7 @@ using Enjaxel.Constant;
 namespace Enjaxel.TextParser.Config
 {
     /// <summary>
-    /// CSVの内容を抽象的に保持するdllのデフォルトクラス
+    /// CSVの内容をListで保持するクラス
     /// </summary>
     public class CsvContents : IConfig
     {
@@ -22,7 +22,7 @@ namespace Enjaxel.TextParser.Config
         public IReadOnlyList<IReadOnlyList<string>> Contents { get; }
 
         /// <summary>
-        /// CSVの内容を抽象的に保持します
+        /// CSVの内容をListで保持します
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         public CsvContents(IList<string> Headers,
@@ -59,7 +59,6 @@ namespace Enjaxel.TextParser.Config
 
             sb.AppendLine($"種別：{Type.ToString()}");
             sb.AppendLine($"ヘッダー：[{string.Join("], [", Headers)}]");
-            sb.AppendLine();
 
             foreach (var ctn in Contents)
             {
