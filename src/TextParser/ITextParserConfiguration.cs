@@ -12,11 +12,5 @@ namespace Enjaxel.TextParser
 
         /// <summary> 区切り文字 </summary>
         char Delimiter { get; set; }
-
-        /// <summary> エラーをThrowするかどうかのフラグ </summary>
-        bool ThrowError { get; set; }
-
-        /// <summary> コメント行を許可するかどうかのフラグ </summary>
-        bool AllowComment { get; set; }
     }
 }
