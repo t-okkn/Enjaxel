@@ -108,20 +108,14 @@ namespace Enjaxel.Logging
         public static void WriteLog(string message, EventLogEntryType evType,
                                     int eventId, short categoryId, byte[] rawData)
         {
-            try
+            if (!IsInitialized)
             {
-                if (!IsInitialized)
-                    throw new NotInitializedException
-                        ("EventLogの初期化に必要なパラメータが設定されていません。");
-
-                if (rawData != null) rawData = new byte[] { };
-
-                ELog.WriteEntry(message, evType, eventId, categoryId, rawData);
+                throw new NotInitializedException
+                    ("EventLogの初期化に必要なパラメータが設定されていません。");
             }
-            catch
-            {
-                throw;
-            }
+
+            if (rawData != null) { rawData = new byte[] { }; }
+            ELog.WriteEntry(message, evType, eventId, categoryId, rawData);
         }
 
         /// <summary>

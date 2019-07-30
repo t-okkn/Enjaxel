@@ -322,7 +322,7 @@ namespace Enjaxel.TextParser
                     }
                 }
             }
-            catch (Exception)
+            catch
             {
                 if (ThrowError) { throw; }
                 else { response += 1; }
@@ -424,112 +424,105 @@ namespace Enjaxel.TextParser
             var res = new List<T>();
             var maps = new List<MappingObject>();
 
-            try
+            if (Headers.Count == 0)
             {
-                if (Headers.Count == 0)
+                return res;
+            }
+
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            if (properties.Length != Headers.Count)
+            {
+                throw new FailedMappingException
+                    ("マッピングしようとしているPropertyの数とヘッダーの数が一致しません。");
+            }
+
+            foreach (PropertyInfo prop in properties)
+            {
+                var map = new MappingObject();
+
+                // Propertyに紐付いた属性値を取得
+                HeaderAttribute header_atrb =
+                    prop.GetCustomAttribute<HeaderAttribute>();
+
+                if (prop.PropertyType.Name.Contains("Nullable"))
                 {
-                    return res;
+                    // Nullableの型の時
+                    // GetUnderlyingTypeから型を取得する
+                    map.ObjectType = Nullable.GetUnderlyingType(prop.PropertyType);
+
+                    // Nullableフラグを立てる
+                    map.IsNullable = true;
+                }
+                else
+                {
+                    // Nullableの型でないときは普通にPropertyTypeから取得
+                    map.ObjectType = prop.PropertyType;
                 }
 
-                PropertyInfo[] properties = typeof(T).GetProperties();
-
-                if (properties.Length != Headers.Count)
+                if (header_atrb != null && Headers.Contains(header_atrb.Name))
+                {
+                    // 属性値が設定されていて、属性値に対応するヘッダーが存在している場合
+                    // ヘッダーに対応するプロパティ名を取得
+                    map.Name = prop.Name;
+                    map.Number = Headers.IndexOf(header_atrb.Name);
+                }
+                else if (Headers.Contains(prop.Name))
+                {
+                    // 属性値が設定されていなければヘッダーに対応するプロパティ名を
+                    // 検索して取得
+                    map.Name = prop.Name;
+                    map.Number = Headers.IndexOf(prop.Name);
+                }
+                else
                 {
                     throw new FailedMappingException
-                        ("マッピングしようとしているPropertyの数とヘッダーの数が一致しません。");
+                        ("ヘッダー名称がマッピングしようとしているオブジェクト内に" +
+                         "存在しません。");
                 }
 
-                foreach (PropertyInfo prop in properties)
-                {
-                    var map = new MappingObject();
-
-                    // Propertyに紐付いた属性値を取得
-                    HeaderAttribute header_atrb =
-                        prop.GetCustomAttribute<HeaderAttribute>();
-
-                    if (prop.PropertyType.Name.Contains("Nullable"))
-                    {
-                        // Nullableの型の時
-                        // GetUnderlyingTypeから型を取得する
-                        map.ObjectType = Nullable.GetUnderlyingType(prop.PropertyType);
-
-                        // Nullableフラグを立てる
-                        map.IsNullable = true;
-                    }
-                    else
-                    {
-                        // Nullableの型でないときは普通にPropertyTypeから取得
-                        map.ObjectType = prop.PropertyType;
-                    }
-
-                    if (header_atrb != null && Headers.Contains(header_atrb.Name))
-                    {
-                        // 属性値が設定されていて、属性値に対応するヘッダーが存在している場合
-                        // ヘッダーに対応するプロパティ名を取得
-                        map.Name = prop.Name;
-                        map.Number = Headers.IndexOf(header_atrb.Name);
-                    }
-                    else if (Headers.Contains(prop.Name))
-                    {
-                        // 属性値が設定されていなければヘッダーに対応するプロパティ名を
-                        // 検索して取得
-                        map.Name = prop.Name;
-                        map.Number = Headers.IndexOf(prop.Name);
-                    }
-                    else
-                    {
-                        throw new FailedMappingException
-                            ("ヘッダー名称がマッピングしようとしているオブジェクト内に" +
-                             "存在しません。");
-                    }
-
-                    maps.Add(map);
-                }
-
-                // プロパティに値を設定するためのローカル関数
-                void setValue(ref T obj, string propName, object value) =>
-                    typeof(T).GetRuntimeProperty(propName).SetValue(obj, value);
-
-                foreach (var ctn in Contents)
-                {
-                    // ジェネリクスのインスタンス作成
-                    var Tobj = Activator.CreateInstance<T>();
-
-                    foreach (var map in maps)
-                    {
-                        // コンテンツから値を取得
-                        string str = ctn[map.Number];
-
-                        if (map.ObjectType.Equals(typeof(string)))
-                        {
-                            // マッピング先の型がstringならそのまま値を入れる
-                            setValue(ref Tobj, map.Name, str);
-                        }
-                        else
-                        {
-                            // マッピング先の型がstring以外なら値を変換
-                            TypeCode code = Type.GetTypeCode(map.ObjectType);
-                            object value = string.IsNullOrWhiteSpace(str) ?
-                                               null : str.ConvertValue(code);
-
-                            // valueがnullで、マッピング先の型がNullableでない場合を除き
-                            // 値を設定する
-                            if (!(value == null && (!map.IsNullable)))
-                            {
-                                setValue(ref Tobj, map.Name, value);
-                            }
-
-                            // valueがnullで、マッピング先の型がNullableでない場合は
-                            // マッピング先クラスのコンストラクタの初期値に依存させる
-                        }
-                    }
-
-                    res.Add(Tobj);
-                }
+                maps.Add(map);
             }
-            catch
+
+            // プロパティに値を設定するためのローカル関数
+            void setValue(ref T obj, string propName, object value) =>
+                typeof(T).GetRuntimeProperty(propName).SetValue(obj, value);
+
+            foreach (var ctn in Contents)
             {
-                throw;
+                // ジェネリクスのインスタンス作成
+                var Tobj = Activator.CreateInstance<T>();
+
+                foreach (var map in maps)
+                {
+                    // コンテンツから値を取得
+                    string str = ctn[map.Number];
+
+                    if (map.ObjectType.Equals(typeof(string)))
+                    {
+                        // マッピング先の型がstringならそのまま値を入れる
+                        setValue(ref Tobj, map.Name, str);
+                    }
+                    else
+                    {
+                        // マッピング先の型がstring以外なら値を変換
+                        TypeCode code = Type.GetTypeCode(map.ObjectType);
+                        object value = string.IsNullOrWhiteSpace(str) ?
+                                           null : str.ConvertValue(code);
+
+                        // valueがnullで、マッピング先の型がNullableでない場合を除き
+                        // 値を設定する
+                        if (!(value == null && (!map.IsNullable)))
+                        {
+                            setValue(ref Tobj, map.Name, value);
+                        }
+
+                        // valueがnullで、マッピング先の型がNullableでない場合は
+                        // マッピング先クラスのコンストラクタの初期値に依存させる
+                    }
+                }
+
+                res.Add(Tobj);
             }
 
             return res;
@@ -550,28 +543,21 @@ namespace Enjaxel.TextParser
         {
             var dt = new DataTable(tableName);
 
-            try
+            for (int i = 0; i < Headers.Count; i++)
             {
+                dt.Columns.Add(new DataColumn(Headers[i], typeof(string)));
+            }
+
+            foreach (var ctn in Contents)
+            {
+                DataRow dr = dt.NewRow();
+
                 for (int i = 0; i < Headers.Count; i++)
                 {
-                    dt.Columns.Add(new DataColumn(Headers[i], typeof(string)));
+                    dr[i] = ctn[i];
                 }
 
-                foreach (var ctn in Contents)
-                {
-                    DataRow dr = dt.NewRow();
-
-                    for (int i = 0; i < Headers.Count; i++)
-                    {
-                        dr[i] = ctn[i];
-                    }
-
-                    dt.Rows.Add(dr);
-                }
-            }
-            catch
-            {
-                throw;
+                dt.Rows.Add(dr);
             }
 
             return dt;

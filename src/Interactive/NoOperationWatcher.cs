@@ -39,10 +39,14 @@ namespace Enjaxel.Interactive
 
             double interval = 0.0D;
             if (periodValue <= 3600)
+            {
                 interval = Math.Floor(periodValue * 1000.0D / 60.0D);
+            }
             else
+            {
                 // 1分間隔
                 interval = 60000.0D;
+            }
 
             EventTimer = new Timer(interval);
             Initialize();
@@ -80,7 +84,7 @@ namespace Enjaxel.Interactive
             IsDisposed = false;
             EventTimer.Elapsed += ExpiredCheck;
 
-            this.LastOperation = DateTime.Now;
+            LastOperation = DateTime.Now;
             EventTimer.Enabled = false;
         }
 
@@ -167,7 +171,9 @@ namespace Enjaxel.Interactive
             TimeSpan diff = e.SignalTime - LastOperation;
 
             if (diff.TotalSeconds > Period.TotalSeconds)
+            {
                 ExpiredNotice(new NoOperationEventArgs(LastOperation, diff));
+            }
         }
     }
 

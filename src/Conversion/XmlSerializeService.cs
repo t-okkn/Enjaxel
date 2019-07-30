@@ -25,29 +25,22 @@ namespace Enjaxel.Conversion
         {
             var result = default(T);
 
-            try
-            {
-                // T型インスタンスを作成
-                result = Activator.CreateInstance<T>();
+            // T型インスタンスを作成
+            result = Activator.CreateInstance<T>();
 
-                // デシリアライズの準備
-                var serializer = new XmlSerializer(typeof(T));
-                var xr_settings = new XmlReaderSettings()
-                {
-                    // XMLとして不正な文字をチェックしない
-                    CheckCharacters = false
-                };
-
-                // Xml文字列をメモリ上に展開
-                using (var xr = XmlReader.Create(stream, xr_settings))
-                {
-                    // メモリ上のXmlからT型インスタンスに値を詰め込む
-                    result = (T)serializer.Deserialize(xr);
-                }
-            }
-            catch
+            // デシリアライズの準備
+            var serializer = new XmlSerializer(typeof(T));
+            var xr_settings = new XmlReaderSettings()
             {
-                throw;
+                // XMLとして不正な文字をチェックしない
+                CheckCharacters = false
+            };
+
+            // Xml文字列をメモリ上に展開
+            using (var xr = XmlReader.Create(stream, xr_settings))
+            {
+                // メモリ上のXmlからT型インスタンスに値を詰め込む
+                result = (T)serializer.Deserialize(xr);
             }
 
             return result;
@@ -67,22 +60,15 @@ namespace Enjaxel.Conversion
         public static T XmlDeserialize<T>(string xml, Encoding encode)
             where T : new()
         {
-            try
+            if (string.IsNullOrWhiteSpace(xml))
             {
-                if (string.IsNullOrWhiteSpace(xml))
-                {
-                    throw new ArgumentException("文字列はnullか空文字列です。");
-                }
-
-                // Xml文字列をメモリ上に展開
-                using (var stream = new MemoryStream(encode.GetBytes(xml)))
-                {
-                    return XmlDeserialize<T>(stream);
-                }
+                throw new ArgumentException("文字列はnullか空文字列です。");
             }
-            catch
+
+            // Xml文字列をメモリ上に展開
+            using (var stream = new MemoryStream(encode.GetBytes(xml)))
             {
-                throw;
+                return XmlDeserialize<T>(stream);
             }
         }
 
@@ -119,22 +105,15 @@ namespace Enjaxel.Conversion
         public static T XmlDeserialize<T>(FileInfo fileInfo, Encoding encode)
             where T : new()
         {
-            try
+            if (!fileInfo.Exists)
             {
-                if (!fileInfo.Exists)
-                {
-                    throw new FileNotFoundException("対象のファイルが存在しません。");
-                }
-
-                // Xml文字列をメモリ上に展開
-                using (var sr = new StreamReader(fileInfo.FullName, encode))
-                {
-                    return XmlDeserialize<T>(sr.BaseStream);
-                }
+                throw new FileNotFoundException("対象のファイルが存在しません。");
             }
-            catch
+
+            // Xml文字列をメモリ上に展開
+            using (var sr = new StreamReader(fileInfo.FullName, encode))
             {
-                throw;
+                return XmlDeserialize<T>(sr.BaseStream);
             }
         }
 
@@ -173,23 +152,16 @@ namespace Enjaxel.Conversion
         {
             string result = string.Empty;
 
-            try
+            using (var stream = new MemoryStream())
             {
-                using (var stream = new MemoryStream())
-                {
-                    // シリアライズの準備
-                    var serializer = new XmlSerializer(target.GetType());
+                // シリアライズの準備
+                var serializer = new XmlSerializer(target.GetType());
 
-                    // T型オブジェクトをメモリストリームへ展開
-                    serializer.Serialize(stream, target);
+                // T型オブジェクトをメモリストリームへ展開
+                serializer.Serialize(stream, target);
 
-                    // 結果を取得
-                    result = encode.GetString(stream.ToArray());
-                }
-            }
-            catch
-            {
-                throw;
+                // 結果を取得
+                result = encode.GetString(stream.ToArray());
             }
 
             return result;

@@ -23,26 +23,17 @@ namespace Enjaxel.Conversion
         public static T JsonDeserialize<T>(Stream stream)
             where T : new()
         {
-            var result = default(T);
+            // T型インスタンスを作成
+            T result = Activator.CreateInstance<T>();
 
-            try
+            // デシリアライズの準備
+            var serializer = new DataContractJsonSerializer(typeof(T));
+
+            // Json文字列をメモリ上に展開
+            using (stream)
             {
-                // T型インスタンスを作成
-                result = Activator.CreateInstance<T>();
-
-                // デシリアライズの準備
-                var serializer = new DataContractJsonSerializer(typeof(T));
-
-                // Json文字列をメモリ上に展開
-                using (stream)
-                {
-                    // メモリ上のJsonからT型インスタンスに値を詰め込む
-                    result = (T)serializer.ReadObject(stream);
-                }
-            }
-            catch
-            {
-                throw;
+                // メモリ上のJsonからT型インスタンスに値を詰め込む
+                result = (T)serializer.ReadObject(stream);
             }
 
             return result;
@@ -62,22 +53,15 @@ namespace Enjaxel.Conversion
         public static T JsonDeserialize<T>(string json, Encoding encode)
             where T : new()
         {
-            try
+            if (string.IsNullOrWhiteSpace(json))
             {
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    throw new ArgumentException("文字列はnullか空文字列です。");
-                }
-
-                // Json文字列をメモリ上に展開
-                using (var stream = new MemoryStream(encode.GetBytes(json)))
-                {
-                    return JsonDeserialize<T>(stream);
-                }
+                throw new ArgumentException("文字列はnullか空文字列です。");
             }
-            catch
+
+            // Json文字列をメモリ上に展開
+            using (var stream = new MemoryStream(encode.GetBytes(json)))
             {
-                throw;
+                return JsonDeserialize<T>(stream);
             }
         }
 
@@ -114,22 +98,15 @@ namespace Enjaxel.Conversion
         public static T JsonDeserialize<T>(FileInfo fileInfo, Encoding encode)
             where T : new()
         {
-            try
+            if (!fileInfo.Exists)
             {
-                if (!fileInfo.Exists)
-                {
-                    throw new FileNotFoundException("対象のファイルが存在しません。");
-                }
-
-                // Json文字列をメモリ上に展開
-                using (var sr = new StreamReader(fileInfo.FullName, encode))
-                {
-                    return JsonDeserialize<T>(sr.BaseStream);
-                }
+                throw new FileNotFoundException("対象のファイルが存在しません。");
             }
-            catch
+
+            // Json文字列をメモリ上に展開
+            using (var sr = new StreamReader(fileInfo.FullName, encode))
             {
-                throw;
+                return JsonDeserialize<T>(sr.BaseStream);
             }
         }
 
@@ -170,21 +147,14 @@ namespace Enjaxel.Conversion
         {
             string result = string.Empty;
 
-            try
+            using (var stream = new MemoryStream())
             {
-                using (var stream = new MemoryStream())
-                {
-                    // シリアライズの準備
-                    var serializer = new DataContractJsonSerializer(target.GetType());
-                    // T型オブジェクトをメモリストリームへ展開
-                    serializer.WriteObject(stream, target);
-                    // 結果を取得
-                    result = encode.GetString(stream.ToArray());
-                }
-            }
-            catch
-            {
-                throw;
+                // シリアライズの準備
+                var serializer = new DataContractJsonSerializer(target.GetType());
+                // T型オブジェクトをメモリストリームへ展開
+                serializer.WriteObject(stream, target);
+                // 結果を取得
+                result = encode.GetString(stream.ToArray());
             }
 
             return result;

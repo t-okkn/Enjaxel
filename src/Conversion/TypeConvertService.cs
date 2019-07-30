@@ -39,94 +39,87 @@ namespace Enjaxel.Conversion
             // DBNull値フラグ
             bool dbnull_flag = value == DBNull.Value ? true : false;
 
-            try
+            switch (typeCode)
             {
-                switch (typeCode)
+                case TypeCode.Boolean:
                 {
-                    case TypeCode.Boolean:
-                    {
-                        return dbnull_flag ? v_bool : Convert.ToBoolean(value);
-                    }
-
-                    case TypeCode.Byte:
-                    {
-                        return dbnull_flag ? v_byte : Convert.ToByte(value);
-                    }
-
-                    case TypeCode.SByte:
-                    {
-                        return dbnull_flag ? v_sbyte : Convert.ToSByte(value);
-                    }
-
-                    case TypeCode.Int16:
-                    {
-                        return dbnull_flag ? v_short : Convert.ToInt16(value);
-                    }
-
-                    case TypeCode.UInt16:
-                    {
-                        return dbnull_flag ? v_ushort : Convert.ToUInt16(value);
-                    }
-
-                    case TypeCode.Int32:
-                    {
-                        return dbnull_flag ? v_int : Convert.ToInt32(value);
-                    }
-
-                    case TypeCode.UInt32:
-                    {
-                        return dbnull_flag ? v_uint : Convert.ToUInt32(value);
-                    }
-
-                    case TypeCode.Int64:
-                    {
-                        return dbnull_flag ? v_long : Convert.ToInt64(value);
-                    }
-
-                    case TypeCode.UInt64:
-                    {
-                        return dbnull_flag ? v_ulong : Convert.ToUInt64(value);
-                    }
-
-                    case TypeCode.Char:
-                    {
-                        return dbnull_flag ? v_char : Convert.ToChar(value);
-                    }
-
-                    case TypeCode.Double:
-                    {
-                        return dbnull_flag ? v_double : Convert.ToDouble(value);
-                    }
-
-                    case TypeCode.Single:
-                    {
-                        return dbnull_flag ? v_single : Convert.ToSingle(value);
-                    }
-
-                    case TypeCode.Decimal:
-                    {
-                        return dbnull_flag ? v_decimal : Convert.ToDecimal(value);
-                    }
-
-                    case TypeCode.String:
-                    {
-                        return dbnull_flag ? v_string : Convert.ToString(value);
-                    }
-
-                    case TypeCode.DateTime:
-                    {
-                        return dbnull_flag ? v_date : Convert.ToDateTime(value);
-                    }
-
-                    default:
-                    {
-                        return null;
-                    }
+                    return dbnull_flag ? v_bool : Convert.ToBoolean(value);
                 }
-            }
-            catch (Exception)
-            {
-                throw;
+
+                case TypeCode.Byte:
+                {
+                    return dbnull_flag ? v_byte : Convert.ToByte(value);
+                }
+
+                case TypeCode.SByte:
+                {
+                    return dbnull_flag ? v_sbyte : Convert.ToSByte(value);
+                }
+
+                case TypeCode.Int16:
+                {
+                    return dbnull_flag ? v_short : Convert.ToInt16(value);
+                }
+
+                case TypeCode.UInt16:
+                {
+                    return dbnull_flag ? v_ushort : Convert.ToUInt16(value);
+                }
+
+                case TypeCode.Int32:
+                {
+                    return dbnull_flag ? v_int : Convert.ToInt32(value);
+                }
+
+                case TypeCode.UInt32:
+                {
+                    return dbnull_flag ? v_uint : Convert.ToUInt32(value);
+                }
+
+                case TypeCode.Int64:
+                {
+                    return dbnull_flag ? v_long : Convert.ToInt64(value);
+                }
+
+                case TypeCode.UInt64:
+                {
+                    return dbnull_flag ? v_ulong : Convert.ToUInt64(value);
+                }
+
+                case TypeCode.Char:
+                {
+                    return dbnull_flag ? v_char : Convert.ToChar(value);
+                }
+
+                case TypeCode.Double:
+                {
+                    return dbnull_flag ? v_double : Convert.ToDouble(value);
+                }
+
+                case TypeCode.Single:
+                {
+                    return dbnull_flag ? v_single : Convert.ToSingle(value);
+                }
+
+                case TypeCode.Decimal:
+                {
+                    return dbnull_flag ? v_decimal : Convert.ToDecimal(value);
+                }
+
+                case TypeCode.String:
+                {
+                    return dbnull_flag ? v_string : Convert.ToString(value);
+                }
+
+                case TypeCode.DateTime:
+                {
+                    return dbnull_flag ? v_date : Convert.ToDateTime(value);
+                }
+
+                default:
+                {
+                    return null;
+                }
             }
         }
 
@@ -148,102 +141,70 @@ namespace Enjaxel.Conversion
             // DBNull値フラグ
             bool dbnull_flag = value == DBNull.Value ? true : false;
 
-            try
+            if (t_type.IsPrimitive)
             {
-                if (t_type.IsPrimitive)
-                {
-                    if (dbnull_flag)
-                    {
-                        switch (Type.GetTypeCode(t_type))
-                        {
-                            case TypeCode.Boolean:
-                            {
-                                return Convert.ToBoolean(value);
-                            }
-
-                            case TypeCode.Byte:
-                            {
-                                return Convert.ToByte(value);
-                            }
-
-                            case TypeCode.SByte:
-                            {
-                                return Convert.ToSByte(value);
-                            }
-
-                            case TypeCode.Int16:
-                            {
-                                return Convert.ToInt16(value);
-                            }
-
-                            case TypeCode.UInt16:
-                            {
-                                return Convert.ToUInt16(value);
-                            }
-
-                            case TypeCode.Int32:
-                            {
-                                return Convert.ToInt32(value);
-                            }
-
-                            case TypeCode.UInt32:
-                            {
-                                return Convert.ToUInt32(value);
-                            }
-
-                            case TypeCode.Int64:
-                            {
-                                return Convert.ToInt64(value);
-                            }
-
-                            case TypeCode.UInt64:
-                            {
-                                return Convert.ToUInt64(value);
-                            }
-
-                            case TypeCode.Char:
-                            {
-                                return Convert.ToChar(value);
-                            }
-
-                            case TypeCode.Double:
-                            {
-                                return Convert.ToDouble(value);
-                            }
-
-                            case TypeCode.Single:
-                            {
-                                return Convert.ToSingle(value);
-                            }
-
-                            default:
-                            {
-                                return res_t;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return res_t;
-                    }
-                }
-                else
+                if (dbnull_flag)
                 {
                     switch (Type.GetTypeCode(t_type))
                     {
-                        case TypeCode.Decimal:
+                        case TypeCode.Boolean:
                         {
-                            return dbnull_flag ? 0M : Convert.ToDecimal(value);
+                            return Convert.ToBoolean(value);
                         }
 
-                        case TypeCode.String:
+                        case TypeCode.Byte:
                         {
-                            return dbnull_flag ? string.Empty : Convert.ToString(value);
+                            return Convert.ToByte(value);
                         }
 
-                        case TypeCode.DateTime:
+                        case TypeCode.SByte:
                         {
-                            return dbnull_flag ? DateTime.MinValue : Convert.ToDateTime(value);
+                            return Convert.ToSByte(value);
+                        }
+
+                        case TypeCode.Int16:
+                        {
+                            return Convert.ToInt16(value);
+                        }
+
+                        case TypeCode.UInt16:
+                        {
+                            return Convert.ToUInt16(value);
+                        }
+
+                        case TypeCode.Int32:
+                        {
+                            return Convert.ToInt32(value);
+                        }
+
+                        case TypeCode.UInt32:
+                        {
+                            return Convert.ToUInt32(value);
+                        }
+
+                        case TypeCode.Int64:
+                        {
+                            return Convert.ToInt64(value);
+                        }
+
+                        case TypeCode.UInt64:
+                        {
+                            return Convert.ToUInt64(value);
+                        }
+
+                        case TypeCode.Char:
+                        {
+                            return Convert.ToChar(value);
+                        }
+
+                        case TypeCode.Double:
+                        {
+                            return Convert.ToDouble(value);
+                        }
+
+                        case TypeCode.Single:
+                        {
+                            return Convert.ToSingle(value);
                         }
 
                         default:
@@ -252,10 +213,35 @@ namespace Enjaxel.Conversion
                         }
                     }
                 }
+                else
+                {
+                    return res_t;
+                }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                switch (Type.GetTypeCode(t_type))
+                {
+                    case TypeCode.Decimal:
+                    {
+                        return dbnull_flag ? 0M : Convert.ToDecimal(value);
+                    }
+
+                    case TypeCode.String:
+                    {
+                        return dbnull_flag ? string.Empty : Convert.ToString(value);
+                    }
+
+                    case TypeCode.DateTime:
+                    {
+                        return dbnull_flag ? DateTime.MinValue : Convert.ToDateTime(value);
+                    }
+
+                    default:
+                    {
+                        return res_t;
+                    }
+                }
             }
         }
 

@@ -57,6 +57,7 @@
     <Compile Include="Communication\ISocket.cs" />
     <Compile Include="Communication\IStreamServer.cs" />
     <Compile Include="Communication\NamedPipe\NamedPipeIpcClient.cs" />
+    <Compile Include="Communication\NetworkException.cs" />
     <Compile Include="Communication\NetworkTool.cs" />
     <Compile Include="Communication\SocketCom\TCPSocketServerBase.cs" />
     <Compile Include="TextParser\Config\CsvContents.cs" />

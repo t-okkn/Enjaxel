@@ -19,25 +19,18 @@ namespace Enjaxel.Communication
             // IPv4アドレスを入れる配列
             var ipv4Arr = new IPAddress[0];
 
-            try
+            // 入力されたIPアドレスからIPv4アドレス（ループバック・APIPA以外）のみを抜き出す
+            if (ipAddrs.Length > 0)
             {
-                // 入力されたIPアドレスからIPv4アドレス（ループバック・APIPA以外）のみを抜き出す
-                if (ipAddrs.Length > 0)
+                foreach (var ipAddr in ipAddrs)
                 {
-                    foreach (var ipAddr in ipAddrs)
+                    if (ipAddr.AddressFamily == AddressFamily.InterNetwork &&
+                        (!IPAddress.IsLoopback(ipAddr)) && (!IsAPIPA(ipAddr)))
                     {
-                        if (ipAddr.AddressFamily == AddressFamily.InterNetwork &&
-                            (!IPAddress.IsLoopback(ipAddr)) && (!IsAPIPA(ipAddr)))
-                        {
-                            Array.Resize(ref ipv4Arr, ipv4Arr.Length + 1);
-                            ipv4Arr[ipv4Arr.Length - 1] = ipAddr;
-                        }
+                        Array.Resize(ref ipv4Arr, ipv4Arr.Length + 1);
+                        ipv4Arr[ipv4Arr.Length - 1] = ipAddr;
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw;
             }
 
             return ipv4Arr;
@@ -53,23 +46,16 @@ namespace Enjaxel.Communication
             string hostname = Dns.GetHostName();
             IPAddress[] addrList = Dns.GetHostAddresses(hostname);
 
-            try
-            {
-                IPAddress[] ipv4Arr = GetIpv4Address(addrList);
+            IPAddress[] ipv4Arr = GetIpv4Address(addrList);
 
-                // 抜き出したIPv4アドレスが存在するかチェック
-                if (ipv4Arr.Length < 1)
-                {
-                    throw new Exception
-                        ("IPアドレスが端末に設定されていないか、LANケーブルが端末に接続されていません。");
-                }
-
-                return ipv4Arr;
-            }
-            catch (Exception)
+            // 抜き出したIPv4アドレスが存在するかチェック
+            if (ipv4Arr.Length < 1)
             {
-                throw;
+                throw new NetworkException
+                    ("IPアドレスが端末に設定されていないか、LANケーブルが端末に接続されていません。");
             }
+
+            return ipv4Arr;
         }
 
         /// <summary>

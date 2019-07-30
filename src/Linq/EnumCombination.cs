@@ -22,7 +22,9 @@ namespace Enjaxel.Linq
             if (pickUp == 1)
             {
                 foreach (T item in items)
+                {
                     yield return new T[] { item };
+                }
             }
 
             foreach (T item in items)
@@ -33,12 +35,18 @@ namespace Enjaxel.Linq
                 // itemよりも前のものを除く（順列と組み合わせの違い)
                 // 重複を許さない場合、unusedから item そのものも取り除く
                 if (withRepetition)
+                {
                     unused = items;
+                }
                 else
+                {
                     unused = items.SkipWhile(x => !x.Equals(item)).Skip(1);
+                }
 
                 foreach (var right in Combination(unused, pickUp - 1, withRepetition))
+                {
                     yield return left.Concat(right).ToArray();
+                }
             }
         }
     }

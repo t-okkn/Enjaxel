@@ -65,25 +65,14 @@ namespace Enjaxel.Conversion
         /// <summary>
         /// 文字列形式の日時表記をDateTime型に変換するメソッド
         /// </summary>
-        /// <param name="inString"></param>
+        /// <param name="input"></param>
         /// <returns></returns>
-        public static DateTime ToDateTime(this string inString)
+        public static DateTime ToDateTime(this string input)
         {
-            DateTime resDatetime = DateTime.MinValue;
+            IFormatProvider format = DateTimeFormatInfo.InvariantInfo;
+            var dts = DateTimeStyles.None;
 
-            try
-            {
-                resDatetime = DateTime.ParseExact(inString,
-                                                  ExpectedFormats,
-                                                  DateTimeFormatInfo.InvariantInfo,
-                                                  DateTimeStyles.None);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return resDatetime;
+            return DateTime.ParseExact(input, ExpectedFormats, format, dts);
         }
     }
 }
