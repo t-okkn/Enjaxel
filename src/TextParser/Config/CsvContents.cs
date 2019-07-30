@@ -28,10 +28,16 @@ namespace Enjaxel.TextParser.Config
         public CsvContents(IList<string> Headers,
                            IList<IReadOnlyList<string>> Contents)
         {
+            var h = new List<string>(Headers.Count);
+            var c = new List<IReadOnlyList<string>>(Contents.Count);
+
+            // コピーを作成する
+            h.AddRange(Headers);
+            c.AddRange(Contents);
+
             Type = ConfigType.CSV;
-            this.Headers = new ReadOnlyCollection<string>(Headers);
-            this.Contents =
-                new ReadOnlyCollection<IReadOnlyList<string>>(Contents);
+            this.Headers = new ReadOnlyCollection<string>(h);
+            this.Contents = new ReadOnlyCollection<IReadOnlyList<string>>(c);
         }
 
         /// <summary>
