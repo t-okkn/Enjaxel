@@ -12,7 +12,7 @@ using Enjaxel.TextParser.Config;
 namespace Enjaxel.TextParser
 {
     /// <summary>
-    /// データを形式化されたテキストファイルとして出力します
+    /// データを区切り文字によって区切られている形式化されたテキストファイルとして出力する機能を提供します
     /// </summary>
     public class CsvWriter : ITextParserConfiguration
     {
@@ -39,8 +39,6 @@ namespace Enjaxel.TextParser
             CodePage = Encoding.GetEncoding("Shift_JIS");
             HasHeader = true;
             IsEncloseFieldInDoubleQuotes = false;
-
-            CtorCommon();
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace Enjaxel.TextParser
             HasHeader = true;
             IsEncloseFieldInDoubleQuotes = false;
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
@@ -69,8 +67,6 @@ namespace Enjaxel.TextParser
             Delimiter = ',';
             CodePage = Encoding.GetEncoding("Shift_JIS");
             IsEncloseFieldInDoubleQuotes = false;
-
-            CtorCommon();
         }
 
         /// <summary>
@@ -86,7 +82,7 @@ namespace Enjaxel.TextParser
             CodePage = Encoding.GetEncoding("Shift_JIS");
             IsEncloseFieldInDoubleQuotes = false;
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
@@ -102,7 +98,7 @@ namespace Enjaxel.TextParser
             HasHeader = true;
             IsEncloseFieldInDoubleQuotes = false;
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
@@ -118,8 +114,6 @@ namespace Enjaxel.TextParser
             this.IsEncloseFieldInDoubleQuotes = IsEncloseFieldInDoubleQuotes;
             Delimiter = ',';
             CodePage = Encoding.GetEncoding("Shift_JIS");
-
-            CtorCommon();
         }
 
         /// <summary>
@@ -136,7 +130,7 @@ namespace Enjaxel.TextParser
             this.HasHeader = HasHeader;
             IsEncloseFieldInDoubleQuotes = false;
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
@@ -155,7 +149,7 @@ namespace Enjaxel.TextParser
             this.IsEncloseFieldInDoubleQuotes = IsEncloseFieldInDoubleQuotes;
             CodePage = Encoding.GetEncoding("Shift_JIS");
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
@@ -175,14 +169,14 @@ namespace Enjaxel.TextParser
             this.HasHeader = HasHeader;
             this.IsEncloseFieldInDoubleQuotes = IsEncloseFieldInDoubleQuotes;
 
-            CtorCommon();
+            CheckDelimiter();
         }
 
         /// <summary>
-        /// コンストラクタ用共通メソッド
+        /// コンストラクタ用共通メソッド（無効な区切り文字の確認の）
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
-        private void CtorCommon()
+        private void CheckDelimiter()
         {
             if (Delimiter == '"')
             {
