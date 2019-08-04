@@ -13,7 +13,7 @@ using Enjaxel.TextParser.Config;
 namespace Enjaxel.TextParser
 {
     /// <summary>
-    /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供するクラス
+    /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供します
     /// </summary>
     public class CsvReader : TextParser
     {
@@ -49,7 +49,6 @@ namespace Enjaxel.TextParser
         /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供します
         /// </summary>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        /// <exception cref="ArgumentException"></exception>
         public CsvReader(bool HasHeader) : base(',', HasHeader)
         {
             Init();
