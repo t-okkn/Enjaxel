@@ -20,7 +20,7 @@ namespace Enjaxel.Conversion
         /// <param name="stream"> 変換するStream </param>
         /// <returns> T型Entity </returns>
         /// <exception cref="MissingMethodException"></exception>
-        public static T JsonDeserialize<T>(Stream stream)
+        public static T JsonDeserialize<T>(this Stream stream)
             where T : new()
         {
             // T型インスタンスを作成
@@ -50,7 +50,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="MissingMethodException"></exception>
         /// <exception cref="EncoderFallbackException"></exception>
-        public static T JsonDeserialize<T>(string json, Encoding encode)
+        public static T JsonDeserialize<T>(this string json, Encoding encode)
             where T : new()
         {
             if (string.IsNullOrWhiteSpace(json))
@@ -76,7 +76,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="MissingMethodException"></exception>
         /// <exception cref="EncoderFallbackException"></exception>
-        public static T JsonDeserialize<T>(string json)
+        public static T JsonDeserialize<T>(this string json)
             where T : new()
         {
             return JsonDeserialize<T>(json, Encoding.UTF8);
@@ -95,7 +95,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="NotSupportedException"></exception>
         /// <exception cref="MissingMethodException"></exception>
-        public static T JsonDeserialize<T>(FileInfo fileInfo, Encoding encode)
+        public static T JsonDeserialize<T>(this FileInfo fileInfo, Encoding encode)
             where T : new()
         {
             if (!fileInfo.Exists)
@@ -123,7 +123,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="NotSupportedException"></exception>
         /// <exception cref="MissingMethodException"></exception>
-        public static T JsonDeserialize<T>(FileInfo fileInfo)
+        public static T JsonDeserialize<T>(this FileInfo fileInfo)
             where T : new()
         {
             return JsonDeserialize<T>(fileInfo, Encoding.UTF8);
@@ -143,7 +143,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="SerializationException"></exception>
         /// <exception cref="QuotaExceededException"></exception>
         /// <exception cref="DecoderFallbackException"></exception>
-        public static string JsonSerialize(object target, Encoding encode)
+        public static string JsonSerialize(this object target, Encoding encode)
         {
             string result = string.Empty;
 
@@ -171,7 +171,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="SerializationException"></exception>
         /// <exception cref="QuotaExceededException"></exception>
         /// <exception cref="DecoderFallbackException"></exception>
-        public static string JsonSerialize(object target)
+        public static string JsonSerialize(this object target)
         {
             return JsonSerialize(target, Encoding.UTF8);
         }

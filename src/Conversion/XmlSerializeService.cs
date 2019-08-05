@@ -20,7 +20,7 @@ namespace Enjaxel.Conversion
         /// <returns> T型Entity </returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="MissingMethodException"></exception>
-        public static T XmlDeserialize<T>(Stream stream)
+        public static T XmlDeserialize<T>(this Stream stream)
             where T : new()
         {
             var result = default(T);
@@ -57,7 +57,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="MissingMethodException"></exception>
         /// <exception cref="EncoderFallbackException"></exception>
-        public static T XmlDeserialize<T>(string xml, Encoding encode)
+        public static T XmlDeserialize<T>(this string xml, Encoding encode)
             where T : new()
         {
             if (string.IsNullOrWhiteSpace(xml))
@@ -83,7 +83,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="MissingMethodException"></exception>
         /// <exception cref="EncoderFallbackException"></exception>
-        public static T XmlDeserialize<T>(string xml)
+        public static T XmlDeserialize<T>(this string xml)
             where T : new()
         {
             return XmlDeserialize<T>(xml, Encoding.UTF8);
@@ -102,7 +102,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="NotSupportedException"></exception>
         /// <exception cref="MissingMethodException"></exception>
-        public static T XmlDeserialize<T>(FileInfo fileInfo, Encoding encode)
+        public static T XmlDeserialize<T>(this FileInfo fileInfo, Encoding encode)
             where T : new()
         {
             if (!fileInfo.Exists)
@@ -130,7 +130,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="NotSupportedException"></exception>
         /// <exception cref="MissingMethodException"></exception>
-        public static T XmlDeserialize<T>(FileInfo fileInfo)
+        public static T XmlDeserialize<T>(this FileInfo fileInfo)
             where T : new()
         {
             return XmlDeserialize<T>(fileInfo, Encoding.UTF8);
@@ -148,7 +148,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="DecoderFallbackException"></exception>
-        public static string XmlSerialize(object target, Encoding encode)
+        public static string XmlSerialize(this object target, Encoding encode)
         {
             string result = string.Empty;
 
@@ -177,7 +177,7 @@ namespace Enjaxel.Conversion
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="DecoderFallbackException"></exception>
-        public static string XmlSerialize(object target)
+        public static string XmlSerialize(this object target)
         {
             return XmlSerialize(target, Encoding.UTF8);
         }
