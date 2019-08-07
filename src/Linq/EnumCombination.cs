@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Enjaxel.Linq
@@ -18,6 +19,7 @@ namespace Enjaxel.Linq
         /// <returns></returns>
         public static IEnumerable<T[]> Combination<T>
             (this IEnumerable<T> items, int pickUp, bool withRepetition)
+            where T : IEquatable<T>
         {
             if (pickUp == 1)
             {
