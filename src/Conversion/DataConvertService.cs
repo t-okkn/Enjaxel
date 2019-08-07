@@ -135,7 +135,7 @@ namespace Enjaxel.Conversion
                             (resT, dr[column_atrb.Name].ConvertValue(p_type_code));
                     } 
                 }
-                else if (dr[column_atrb.Name] != DBNull.Value)
+                else if (dr[column_atrb.Name] == DBNull.Value)
                 {
                     // DataRowの中から値を取得して、DBNullの時で
                     // Propertyの型がStringのときだけString.Emptyを書き込み
@@ -147,6 +147,9 @@ namespace Enjaxel.Conversion
                     {
                         prop.SetValue(resT, null);
                     }
+
+                    // 上記の2つ以外のときは何も書き込まずにインスタンスの初期値に任せる
+                    // 型の初期値を書き込むとDBからの流入値かここで設定した値かわからなくなるため
                 }
             }
 
