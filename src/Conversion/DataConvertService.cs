@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -15,23 +14,19 @@ namespace Enjaxel.Conversion
     public static class DataConvertService
     {
         /// <summary>
-        /// DataTable => List(Of T型Entity) への変換メソッド
+        /// DataTable => IEnumerable(Of T型Entity) への変換メソッド
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="dt"> DBから取得したDataTable </param>
         /// <returns> Entityのリスト </returns>
-        public static List<T> ToEntityList<T>(this DataTable dt)
+        public static IEnumerable<T> AsEnumerable<T>(this DataTable dt)
             where T : new()
         {
-            var resTList = new List<T>();
-
             // Rowの全行をT型Entityに変換
             foreach (DataRow row in dt.AsEnumerable())
             {
-                resTList.Add(row.ToEntity<T>());
+                yield return row.AsEntity<T>();
             }
-
-            return resTList;
         }
 
         /// <summary>
@@ -40,16 +35,16 @@ namespace Enjaxel.Conversion
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="dr"> DataRow </param>
         /// <returns> T型Entity </returns>
-        public static T ToEntity<T>(this DataRow dr)
+        public static T AsEntity<T>(this DataRow dr)
             where T : new()
         {
             // 戻り値用にT型インスタンスを作成
             var resT = Activator.CreateInstance<T>();
-            IEnumerable<string> columnNames = null;
             bool nullable_flag = false;
 
             // DataRow(DataTableを一時的に引いて)からカラム名のリストを取得
-            columnNames = dr.Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName);
+            var columnNames = dr.Table.Columns.Cast<DataColumn>()
+                                              .Select(x => x.ColumnName);
 
             // Entityから全てのPropertyを取得
             PropertyInfo[] properties = typeof(T).GetProperties();
@@ -159,30 +154,30 @@ namespace Enjaxel.Conversion
         }
 
         /// <summary>
-        /// List(Of T型Entity) => DataTable への変換メソッド
+        /// IEnumerable(Of T型Entity) => DataTable への変換メソッド
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="tList"> Entityのリスト </param>
         /// <returns> DataTable </returns>
-        public static DataTable ToDataTable<T>(this List<T> tList)
+        public static DataTable AsDataTable<T>(this IEnumerable<T> tList)
             where T : new()
         {
             var table = new DataTable();
             PropertyInfo[] properties = typeof(T).GetProperties();
 
             // EntityのListに何も入っていなければ終了
-            if (tList.Count == 0)
+            if (tList.Count() == 0)
             {
                 return table;
             }
 
             // TableにDataColumnをセット
-            table.Columns.AddRange(tList[0].ToDataColumns());
+            table.Columns.AddRange(tList.First().AsDataColumns());
 
             foreach (T item in tList)
             {
                 // DataTableにDataRowを追加
-                table.Rows.Add(item.ToDataRow(ref table));
+                table.Rows.Add(item.AsDataRow(ref table));
             }
 
             return table;
@@ -194,7 +189,7 @@ namespace Enjaxel.Conversion
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="entity"> T型Entity </param>
         /// <returns> DataColumn </returns>
-        public static DataColumn[] ToDataColumns<T>(this T entity)
+        public static DataColumn[] AsDataColumns<T>(this T entity)
             where T : new()
         {
             // ローカル変数の準備
@@ -241,7 +236,7 @@ namespace Enjaxel.Conversion
         /// <param name="entity"> Entity </param>
         /// <param name="dt"> DataTable </param>
         /// <returns> DataRow </returns>
-        public static DataRow ToDataRow<T>(this T entity, ref DataTable dt)
+        public static DataRow AsDataRow<T>(this T entity, ref DataTable dt)
             where T : new()
         {
             DataRow row = dt.NewRow();
@@ -275,7 +270,7 @@ namespace Enjaxel.Conversion
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="entity"> T型Entity </param>
         /// <returns> SqlCommandのバインド向けSqlParameter配列 </returns>
-        public static SqlParameter[] ToSqlParameters<T>(this T entity)
+        public static SqlParameter[] AsSqlParameters<T>(this T entity)
             where T : new()
         {
             var resPrms = new SqlParameter[0];
