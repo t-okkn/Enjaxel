@@ -24,9 +24,17 @@ namespace Enjaxel.TextParser.Config
         /// <summary>
         /// CSVの内容をListで保持します
         /// </summary>
+        public CsvContents()
+        {
+            // pass
+        }
+
+        /// <summary>
+        /// CSVの内容をListで保持します
+        /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        public CsvContents(IList<string> Headers,
-                           IList<IReadOnlyList<string>> Contents)
+        internal CsvContents(IList<string> Headers,
+                             IList<IReadOnlyList<string>> Contents)
         {
             var h = new List<string>(Headers.Count);
             var c = new List<IReadOnlyList<string>>(Contents.Count);
@@ -63,8 +71,8 @@ namespace Enjaxel.TextParser.Config
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"種別：{Type.ToString()}");
-            sb.AppendLine($"ヘッダー：[{string.Join("], [", Headers)}]");
+            sb.AppendLine($"ConfigType：{Type.ToString()}");
+            sb.AppendLine($"Header：[{string.Join("], [", Headers)}]");
 
             foreach (var ctn in Contents)
             {
