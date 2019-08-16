@@ -32,15 +32,15 @@ namespace Enjaxel.Interactive
         /// <summary>
         /// デフォルトコンストラクタ
         /// </summary>
-        /// <param name="periodValue"> 無操作許容時間（秒） </param>
-        public NoOperationWatcher(int periodValue)
+        /// <param name="period"> 無操作許容時間（秒） </param>
+        public NoOperationWatcher(int period)
         {
-            Period = new TimeSpan(0, 0, periodValue);
+            Period = new TimeSpan(0, 0, period);
 
             double interval = 0.0D;
-            if (periodValue <= 3600)
+            if (period <= 3600)
             {
-                interval = Math.Floor(periodValue * 1000.0D / 60.0D);
+                interval = Math.Floor(period * 1000.0D / 60.0D);
             }
             else
             {
@@ -55,11 +55,11 @@ namespace Enjaxel.Interactive
         /// <summary>
         /// 確認間隔指定可能コンストラクタ
         /// </summary>
-        /// <param name="periodValue"> 無操作許容時間 </param>
+        /// <param name="period"> 無操作許容時間 </param>
         /// <param name="interval"> 確認間隔（秒）</param>
-        public NoOperationWatcher(TimeSpan periodValue, int interval)
+        public NoOperationWatcher(TimeSpan period, int interval)
         {
-            Period = periodValue;
+            Period = period;
             EventTimer = new Timer(interval * 1000.0D);
             Initialize();
         }
@@ -67,11 +67,11 @@ namespace Enjaxel.Interactive
         /// <summary>
         /// TimeSpan指定コンストラクタ
         /// </summary>
-        /// <param name="periodValue"> 無操作許容時間 </param>
+        /// <param name="period"> 無操作許容時間 </param>
         /// <param name="interval"> 確認間隔 </param>
-        public NoOperationWatcher(TimeSpan periodValue, TimeSpan interval)
+        public NoOperationWatcher(TimeSpan period, TimeSpan interval)
         {
-            Period = periodValue;
+            Period = period;
             EventTimer = new Timer(interval.TotalMilliseconds);
             Initialize();
         }
