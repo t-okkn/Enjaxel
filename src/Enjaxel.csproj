@@ -70,6 +70,7 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpc.cs" />
     <Compile Include="Communication\NamedPipe\NamedPipeIpcEventArgs.cs" />
     <Compile Include="Constant\Prm.cs" />
+    <Compile Include="TextParser\Config\TextParserConfigEnum.cs" />
     <Compile Include="TextParser\CsvReader.cs" />
     <Compile Include="TextParser\CsvWriter.cs" />
     <Compile Include="TextParser\HeaderAttribute.cs" />
