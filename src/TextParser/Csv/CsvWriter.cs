@@ -7,9 +7,10 @@ using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
+using Enjaxel.TextParser;
 using Enjaxel.TextParser.Config;
 
-namespace Enjaxel.TextParser
+namespace Enjaxel.TextParser.Csv
 {
     /// <summary>
     /// データを区切り文字によって区切られている形式化されたテキストファイルとして出力する機能を提供します

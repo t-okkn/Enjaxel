@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using Enjaxel.TextParser.Csv;
 
 namespace Enjaxel.TextParser.Config
 {

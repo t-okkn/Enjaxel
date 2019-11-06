@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Enjaxel.Conversion;
 using Enjaxel.TextParser.Config;
 
-namespace Enjaxel.TextParser
+namespace Enjaxel.TextParser.Csv
 {
     /// <summary>
     /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供します
@@ -30,9 +30,10 @@ namespace Enjaxel.TextParser
         /// <summary>
         /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供します
         /// </summary>
-        public CsvReader() : base(',', true)
+        /// <exception cref="ArgumentException"></exception>
+        public CsvReader()
+            : this(',', true, Encoding.GetEncoding("Shift_JIS"), true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -40,18 +41,21 @@ namespace Enjaxel.TextParser
         /// </summary>
         /// <param name="Delimiter"> 区切り文字 </param>
         /// <exception cref="ArgumentException"></exception>
-        public CsvReader(char Delimiter) : base(Delimiter, true)
+        public CsvReader(char Delimiter)
+            : this(Delimiter, true, Encoding.GetEncoding("Shift_JIS"),
+                   true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
         /// 区切り文字によって区切られている形式化されたテキストファイルの読み込み機能を提供します
         /// </summary>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        public CsvReader(bool HasHeader) : base(',', HasHeader)
+        /// <exception cref="ArgumentException"></exception>
+        public CsvReader(bool HasHeader)
+            : this(',', HasHeader, Encoding.GetEncoding("Shift_JIS"),
+                   true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -61,9 +65,8 @@ namespace Enjaxel.TextParser
         /// <param name="CodePage"> 文字コード </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, Encoding CodePage)
-            : base(Delimiter, CodePage, true)
+            : this(Delimiter, true, CodePage, true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -73,9 +76,9 @@ namespace Enjaxel.TextParser
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, bool HasHeader)
-            : base(Delimiter, HasHeader)
+            : this(Delimiter, HasHeader, Encoding.GetEncoding("Shift_JIS"),
+                   true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -86,9 +89,8 @@ namespace Enjaxel.TextParser
         /// <param name="CodePage"> 文字コード </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, bool HasHeader, Encoding CodePage)
-            : base(Delimiter, CodePage, HasHeader)
+            : this(Delimiter, HasHeader, CodePage, true, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -97,13 +99,12 @@ namespace Enjaxel.TextParser
         /// <param name="Delimiter"> 区切り文字 </param>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
         /// <param name="CodePage"> 文字コード </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
+        /// <param name="ThrowError"> エラーをThrowするか（Readのみ） </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, bool HasHeader, Encoding CodePage,
                          bool ThrowError)
-            : base(Delimiter, CodePage, HasHeader, ThrowError)
+            : this(Delimiter, HasHeader, CodePage, ThrowError, false, true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -112,14 +113,14 @@ namespace Enjaxel.TextParser
         /// <param name="Delimiter"> 区切り文字 </param>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
         /// <param name="CodePage"> 文字コード </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
+        /// <param name="ThrowError"> エラーをThrowするか（Readのみ） </param>
         /// <param name="IgnoreBlankLine"> 空行を無視するか </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, bool HasHeader, Encoding CodePage,
                          bool ThrowError, bool IgnoreBlankLine)
-            : base(Delimiter, CodePage, HasHeader, ThrowError, IgnoreBlankLine)
+            : this(Delimiter, HasHeader, CodePage, ThrowError, IgnoreBlankLine, 
+                   true, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -128,16 +129,15 @@ namespace Enjaxel.TextParser
         /// <param name="Delimiter"> 区切り文字 </param>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
         /// <param name="CodePage"> 文字コード </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
+        /// <param name="ThrowError"> エラーをThrowするか（Readのみ） </param>
         /// <param name="IgnoreBlankLine"> 空行を無視するか </param>
         /// <param name="AllowComment"> コメント行を許可するか </param>
         /// <exception cref="ArgumentException"></exception>
         public CsvReader(char Delimiter, bool HasHeader, Encoding CodePage,
                          bool ThrowError, bool IgnoreBlankLine, bool AllowComment)
-            : base(Delimiter, CodePage, HasHeader, ThrowError, IgnoreBlankLine,
-                   AllowComment)
+            : this(Delimiter, HasHeader, CodePage, ThrowError, IgnoreBlankLine,
+                   AllowComment, false)
         {
-            Init();
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Enjaxel.TextParser
         /// <param name="Delimiter"> 区切り文字 </param>
         /// <param name="HasHeader"> ヘッダーが存在するか </param>
         /// <param name="CodePage"> 文字コード </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
+        /// <param name="ThrowError"> エラーをThrowするか（Readのみ） </param>
         /// <param name="IgnoreBlankLine"> 空行を無視するか </param>
         /// <param name="AllowComment"> コメント行を許可するか </param>
         /// <param name="TrimWhiteSpace"> フィールド前後の空白をトリムするか（RFC4180非推奨） </param>
@@ -156,15 +156,6 @@ namespace Enjaxel.TextParser
                          bool TrimWhiteSpace)
             : base(Delimiter, CodePage, HasHeader, ThrowError, IgnoreBlankLine,
                    AllowComment, TrimWhiteSpace)
-        {
-            Init();
-        }
-
-        /// <summary>
-        /// コンストラクタ用初期化メソッド
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        private void Init()
         {
             Headers = new List<string>();
             Contents = new List<IReadOnlyList<string>>();
@@ -207,7 +198,7 @@ namespace Enjaxel.TextParser
         /// <exception cref="OverflowException"></exception>
         /// <exception cref="TextParseException"></exception>
         /// <exception cref="DuplicateHeaderException"></exception>
-        /// <exception cref="NotMatchNumberOfFielsException"></exception>
+        /// <exception cref="MismatchFielsCountException"></exception>
         public int Read(IEnumerable<string> sequence)
         {
             int response = 0;
@@ -298,7 +289,7 @@ namespace Enjaxel.TextParser
                                         throw new TextParseException("不正なデータです。");
                                     }
 
-                                    throw new NotMatchNumberOfFielsException
+                                    throw new MismatchFielsCountException
                                         ("フィールド数とヘッダーの数（1行目のフィールド数）" +
                                          "が一致していません。");
                                 }
@@ -345,7 +336,7 @@ namespace Enjaxel.TextParser
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="IOException"></exception>
         /// <exception cref="RegexMatchTimeoutException"></exception>
-        /// <exception cref="NotMatchNumberOfFielsException"></exception>
+        /// <exception cref="MismatchFielsCountException"></exception>
         /// <exception cref="DuplicateHeaderException"></exception>
         /// <exception cref="TextParseException"></exception>
         public int Read(FileInfo file)
@@ -381,7 +372,7 @@ namespace Enjaxel.TextParser
         /// <exception cref="OverflowException"></exception>
         /// <exception cref="RegexMatchTimeoutException"></exception>
         /// <exception cref="DuplicateHeaderException"></exception>
-        /// <exception cref="NotMatchNumberOfFielsException"></exception>
+        /// <exception cref="MismatchFielsCountException"></exception>
         /// <exception cref="TextParseException"></exception>
         public int Read(string data)
         {
@@ -391,7 +382,7 @@ namespace Enjaxel.TextParser
 
         #region Contents取得
         /// <summary>
-        /// 読み込まれたCSVデータの内容を標準のオブジェクトで取得します
+        /// 読み込まれたCSVデータの内容を <see cref="CsvContents"/> として取得します
         /// </summary>
         /// <returns> Contentsオブジェクト </returns>
         /// <exception cref="ArgumentNullException"></exception>
@@ -528,7 +519,7 @@ namespace Enjaxel.TextParser
         }
 
         /// <summary>
-        /// 読み込まれたCSVデータの内容をDataTableとして取得します
+        /// 読み込まれたCSVデータの内容を <see cref="DataTable"/> として取得します
         /// </summary>
         /// <param name="tableName"> DataTableのテーブル名 </param>
         /// <returns> DataTable </returns>
