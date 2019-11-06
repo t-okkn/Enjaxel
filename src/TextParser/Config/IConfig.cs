@@ -1,8 +1,4 @@
-﻿using Enjaxel.Constant;
-using System.Collections;
-using System.ComponentModel;
-
-namespace Enjaxel.TextParser.Config
+﻿namespace Enjaxel.TextParser.Config
 {
     /// <summary>
     /// コンフィグの内容を格納するインターフェース
