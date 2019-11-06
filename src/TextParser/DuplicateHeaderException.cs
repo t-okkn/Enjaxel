@@ -9,7 +9,8 @@
         /// ヘッダーの情報に重複がある場合に発生します
         /// </summary>
         /// <param name="Message"> 例外内容 </param>
-        public DuplicateHeaderException(string Message)
-            : base(Message) { }
+        public DuplicateHeaderException(string Message) : base(Message)
+        {
+        }
     }
 }

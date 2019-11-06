@@ -11,6 +11,8 @@ namespace Enjaxel
         /// オブジェクトとの紐付けに失敗した場合に発生します
         /// </summary>
         /// <param name="Message"> 例外内容 </param>
-        public FailedMappingException(string Message) : base(Message) { }
+        public FailedMappingException(string Message) : base(Message)
+        {
+        }
     }
 }

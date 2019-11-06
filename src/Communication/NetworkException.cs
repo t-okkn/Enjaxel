@@ -11,6 +11,8 @@ namespace Enjaxel.Communication
         /// ネットワークの接続等に関して問題が発生した場合に発生します
         /// </summary>
         /// <param name="Message"></param>
-        public NetworkException(string Message) : base(Message) { }
+        public NetworkException(string Message) : base(Message)
+        {
+        }
     }
 }

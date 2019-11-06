@@ -11,6 +11,8 @@ namespace Enjaxel
         /// 初期化されていないときに発生します
         /// </summary>
         /// <param name="Message"> 例外内容 </param>
-        public NotInitializedException(string Message) : base(Message) { }
+        public NotInitializedException(string Message) : base(Message)
+        {
+        }
     }
 }

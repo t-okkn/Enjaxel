@@ -11,6 +11,8 @@ namespace Enjaxel.TextParser
         /// テキストの構文解析中に発生します
         /// </summary>
         /// <param name="Message"> 例外内容 </param>
-        public TextParseException(string Message) : base(Message) { }
+        public TextParseException(string Message) : base(Message)
+        {
+        }
     }
 }
