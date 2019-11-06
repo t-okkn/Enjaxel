@@ -60,6 +60,7 @@
     <Compile Include="Communication\NetworkException.cs" />
     <Compile Include="Communication\NetworkTool.cs" />
     <Compile Include="Communication\SocketCom\TCPSocketServerBase.cs" />
+    <Compile Include="Forms\WinMsgBox.cs" />
     <Compile Include="Linq\CompareSelector.cs" />
     <Compile Include="Linq\EqualityComparer.cs" />
     <Compile Include="Linq\ExtensionEnumerable.cs" />
