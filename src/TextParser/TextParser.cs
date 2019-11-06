@@ -35,138 +35,6 @@ namespace Enjaxel.TextParser
         /// <summary> 環境依存の改行コード </summary>
         internal string NL { get; }
 
-        #region コンストラクタ
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        internal TextParser(char Delimiter)
-        {
-            this.Delimiter = Delimiter;
-            CodePage = Encoding.GetEncoding("Shift_JIS");
-            HasHeader = false;
-            ThrowError = true;
-            IgnoreBlankLine = false;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="CodePage"> 文字コード </param>
-        internal TextParser(char Delimiter, Encoding CodePage)
-        {
-            this.Delimiter = Delimiter;
-            this.CodePage = CodePage;
-            HasHeader = false;
-            ThrowError = true;
-            IgnoreBlankLine = false;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        internal TextParser(char Delimiter, bool HasHeader)
-        {
-            this.Delimiter = Delimiter;
-            this.HasHeader = HasHeader;
-            CodePage = Encoding.GetEncoding("Shift_JIS");
-            ThrowError = true;
-            IgnoreBlankLine = false;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="CodePage"> 文字コード </param>
-        /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        internal TextParser(char Delimiter, Encoding CodePage, bool HasHeader)
-        {
-            this.Delimiter = Delimiter;
-            this.CodePage = CodePage;
-            this.HasHeader = HasHeader;
-            ThrowError = true;
-            IgnoreBlankLine = false;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="CodePage"> 文字コード </param>
-        /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
-        internal TextParser(char Delimiter, Encoding CodePage, bool HasHeader,
-                            bool ThrowError)
-        {
-            this.Delimiter = Delimiter;
-            this.CodePage = CodePage;
-            this.HasHeader = HasHeader;
-            this.ThrowError = ThrowError;
-            IgnoreBlankLine = false;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="CodePage"> 文字コード </param>
-        /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
-        /// <param name="IgnoreBlankLine"> 空行を無視するか </param>
-        internal TextParser(char Delimiter, Encoding CodePage, bool HasHeader,
-                            bool ThrowError, bool IgnoreBlankLine)
-        {
-            this.Delimiter = Delimiter;
-            this.CodePage = CodePage;
-            this.HasHeader = HasHeader;
-            this.ThrowError = ThrowError;
-            this.IgnoreBlankLine = IgnoreBlankLine;
-            AllowComment = true;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
-        /// <summary>
-        /// 形式化されたテキストファイルの構文解析機能を提供します
-        /// </summary>
-        /// <param name="Delimiter"> 区切り文字 </param>
-        /// <param name="CodePage"> 文字コード </param>
-        /// <param name="HasHeader"> ヘッダーが存在するか </param>
-        /// <param name="ThrowError"> エラーをThrowするか </param>
-        /// <param name="IgnoreBlankLine"> 空行を無視するか </param>
-        /// <param name="AllowComment"> コメント行を許可するか </param>
-        internal TextParser(char Delimiter, Encoding CodePage, bool HasHeader,
-                            bool ThrowError, bool IgnoreBlankLine, bool AllowComment)
-        {
-            this.Delimiter = Delimiter;
-            this.CodePage = CodePage;
-            this.HasHeader = HasHeader;
-            this.ThrowError = ThrowError;
-            this.IgnoreBlankLine = IgnoreBlankLine;
-            this.AllowComment = AllowComment;
-            TrimWhiteSpace = false;
-            NL = Environment.NewLine;
-        }
-
         /// <summary>
         /// 形式化されたテキストファイルの構文解析機能を提供します
         /// </summary>
@@ -190,13 +58,12 @@ namespace Enjaxel.TextParser
             this.TrimWhiteSpace = TrimWhiteSpace;
             NL = Environment.NewLine;
         }
-        #endregion
 
         #region CSV関連
         /// <summary>
         /// CSVを一行ずつ解析して、CSVのフィールドデータを返します
         /// </summary>
-        /// <param name="contents"> 元データ </param>
+        /// <param name="lines"> 元データ </param>
         /// <returns> CSVのフィールドデータ群 </returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
@@ -204,19 +71,19 @@ namespace Enjaxel.TextParser
         /// <exception cref="RegexMatchTimeoutException"></exception>
         /// <exception cref="OverflowException"></exception>
         /// <exception cref="TextParseException"></exception>
-        internal IEnumerable<string[]> ParseCsv(IEnumerable<string> contents)
+        internal IEnumerable<string[]> ParseCsv(IEnumerable<string> lines)
         {
             string stack = string.Empty;
 
-            foreach (string str in contents)
+            foreach (string line in lines)
             {
                 // コメント行は設定次第で無視する
-                if (AllowComment && Regex.IsMatch(str, "^#"))
+                if (AllowComment && Regex.IsMatch(line, "^#"))
                 {
                     continue;
                 }
 
-                int dq_num = CountDoubleQuotes(str);
+                int dq_num = CountDoubleQuotes(line);
                 bool is_stack_empty = string.IsNullOrEmpty(stack);
 
                 if ((dq_num % 2 == 1 && is_stack_empty) ||
@@ -225,7 +92,7 @@ namespace Enjaxel.TextParser
                     // ダブルクォーテーションの数が奇数でスタックが空文字か
                     // ダブルクォーテーションの数が偶数でスタックが空文字でない場合
                     // stackへ積み込んで次へ
-                    stack += str + NL;
+                    stack += line + NL;
                     continue;
                 }
                 else
@@ -233,7 +100,7 @@ namespace Enjaxel.TextParser
                     // ダブルクォーテーションの数が偶数でスタックが空文字か
                     // ダブルクォーテーションの数が奇数でスタックが空文字でない場合
                     // 対象とする文字列を生成
-                    string target = is_stack_empty ? str : stack + str;
+                    string target = is_stack_empty ? line : stack + line;
                     string[] split = target.Split(Delimiter);
 
                     if (is_stack_empty && IgnoreBlankLine &&
