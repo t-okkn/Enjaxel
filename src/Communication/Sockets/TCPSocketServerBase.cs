@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Enjaxel.Communication.SocketCom
+namespace Enjaxel.Communication.Sockets
 {
     /// <summary>
     /// ソケット通信用Baseクラス
