@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace Enjaxel.Communication
+﻿namespace Enjaxel.Communication
 {
     /// <summary>
     /// Socket通信関連インターフェース
     /// </summary>
-    /// <remarks> IDisposableの実装を強制 </remarks>
-    public interface ISocket : IDisposable
+    public interface ISocket
     {
         /// <summary>
         /// ポート番号

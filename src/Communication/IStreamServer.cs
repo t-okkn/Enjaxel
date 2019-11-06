@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Enjaxel.Communication
 {
     /// <summary>
     /// ストリームサーバ関連インターフェース
     /// </summary>
-    public interface IStreamServer
+    /// <remarks> IDisposableの実装を強制 </remarks>
+    public interface IStreamServer : IDisposable
     {
         /// <summary>
         /// サーバの開始
