@@ -75,11 +75,17 @@
     <Compile Include="Communication\NamedPipe\NamedPipeIpc.cs" />
     <Compile Include="Communication\NamedPipe\NamedPipeIpcEventArgs.cs" />
     <Compile Include="Constant\Prm.cs" />
+    <Compile Include="TextParser\Config\IniContents.cs" />
     <Compile Include="TextParser\Config\TextParserConfigEnum.cs" />
     <Compile Include="TextParser\Csv\CsvReader.cs" />
     <Compile Include="TextParser\Csv\CsvWriter.cs" />
     <Compile Include="TextParser\Csv\MismatchFielsCountException.cs" />
     <Compile Include="TextParser\HeaderAttribute.cs" />
+    <Compile Include="TextParser\Ini\DuplicateParameterException.cs" />
+    <Compile Include="TextParser\Ini\DuplicateSectionException.cs" />
+    <Compile Include="TextParser\Ini\IniMappingAttribute.cs" />
+    <Compile Include="TextParser\Ini\IniReader.cs" />
+    <Compile Include="TextParser\Ini\IniSection.cs" />
     <Compile Include="TextParser\ITextParserConfiguration.cs" />
     <Compile Include="Conversion\DateTimeConvertService.cs" />
     <Compile Include="Conversion\DataConvertService.cs" />
