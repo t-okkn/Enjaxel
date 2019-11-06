@@ -63,6 +63,8 @@
     <Compile Include="Linq\CompareSelector.cs" />
     <Compile Include="Linq\EqualityComparer.cs" />
     <Compile Include="Linq\ExtensionEnumerable.cs" />
+    <Compile Include="Logging\LoggingEnum.cs" />
+    <Compile Include="Logging\LogTitleAttribute.cs" />
     <Compile Include="TextParser\Config\CsvContents.cs" />
     <Compile Include="TextParser\Config\IConfig.cs" />
     <Compile Include="Constant\GlobalEnum.cs" />
