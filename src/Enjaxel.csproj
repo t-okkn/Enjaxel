@@ -60,6 +60,9 @@
     <Compile Include="Communication\NetworkException.cs" />
     <Compile Include="Communication\NetworkTool.cs" />
     <Compile Include="Communication\SocketCom\TCPSocketServerBase.cs" />
+    <Compile Include="Linq\CompareSelector.cs" />
+    <Compile Include="Linq\EqualityComparer.cs" />
+    <Compile Include="Linq\ExtensionEnumerable.cs" />
     <Compile Include="TextParser\Config\CsvContents.cs" />
     <Compile Include="TextParser\Config\IConfig.cs" />
     <Compile Include="Constant\GlobalEnum.cs" />
@@ -89,7 +92,6 @@
     <Compile Include="Conversion\JsonSerializeService.cs" />
     <Compile Include="Conversion\TypeConvertService.cs" />
     <Compile Include="Generator\EntityGenerator.cs" />
-    <Compile Include="Linq\EnumCombination.cs" />
     <Compile Include="Logging\EasyEventLog.cs" />
     <Compile Include="Logging\FormLogger.cs" />
     <Compile Include="Logging\Logger.cs" />
