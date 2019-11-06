@@ -25,22 +25,19 @@ namespace Enjaxel.TextParser.Config
         /// </summary>
         public CsvContents()
         {
-            // pass
+            Type = ConfigType.CSV;
         }
 
         /// <summary>
         /// CSVの内容をListで保持します
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        internal CsvContents(IList<string> Headers,
-                             IList<IReadOnlyList<string>> Contents)
+        internal CsvContents(IEnumerable<string> Headers,
+                             IEnumerable<IReadOnlyList<string>> Contents)
         {
-            var h = new List<string>(Headers.Count);
-            var c = new List<IReadOnlyList<string>>(Contents.Count);
-
             // コピーを作成する
-            h.AddRange(Headers);
-            c.AddRange(Contents);
+            var h = new List<string>(Headers);
+            var c = new List<IReadOnlyList<string>>(Contents);
 
             Type = ConfigType.CSV;
             this.Headers = new ReadOnlyCollection<string>(h);
@@ -57,9 +54,17 @@ namespace Enjaxel.TextParser.Config
             var csv = new CsvReader();
             var file = new FileInfo(configPath);
 
-            int count = csv.Read(file);
+            try
+            {
+                int count = csv.Read(file);
 
-            return count == 0 ? csv.GetContents() : null;
+                return count == 0 ? csv.GetContents() : null;
+            }
+            finally
+            {
+                csv = null;
+                file = null;
+            }
         }
 
         /// <summary>
@@ -89,9 +94,9 @@ namespace Enjaxel.TextParser.Config
         }
 
         /// <summary>
-        /// CsvContentsの任意の列情報を文字列として表します
+        /// CsvContentsの任意の行の情報を文字列として表します
         /// </summary>
-        /// <param name="row"> 列番号 </param>
+        /// <param name="row"> 行番号 </param>
         /// <returns></returns>
         public string ToString(int row)
         {
