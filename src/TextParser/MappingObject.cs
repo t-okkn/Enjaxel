@@ -5,10 +5,13 @@ namespace Enjaxel.TextParser
     /// <summary>
     /// マッピング時に使用するクラス
     /// </summary>
-    internal class MappingObject
+    internal sealed class MappingObject
     {
         /// <summary> Headerと紐づく番号 </summary>
         internal int Number { get; set; }
+
+        /// <summary> プロパティ名称と対になるKey名 </summary>
+        internal string MappingKeyName { get; set; }
 
         /// <summary> プロパティ名称 </summary>
         internal string Name { get; set; }
@@ -25,6 +28,7 @@ namespace Enjaxel.TextParser
         internal MappingObject()
         {
             Number = -1;
+            MappingKeyName = string.Empty;
             Name = string.Empty;
             ObjectType = null;
             IsNullable = false;

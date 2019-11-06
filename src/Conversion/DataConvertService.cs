@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using Enjaxel.TextParser;
 
 namespace Enjaxel.Conversion
 {
@@ -13,105 +14,43 @@ namespace Enjaxel.Conversion
     /// </summary>
     public static class DataConvertService
     {
+        #region DataSetからT型Entityを生成
         /// <summary>
-        /// DataTable => IEnumerable(Of T型Entity) への変換メソッド
-        /// </summary>
-        /// <typeparam name="T"> Entityの型 </typeparam>
-        /// <param name="dt"> DBから取得したDataTable </param>
-        /// <returns> Entityのリスト </returns>
-        public static IEnumerable<T> AsEnumerable<T>(this DataTable dt)
-            where T : new()
-        {
-            // Rowの全行をT型Entityに変換
-            foreach (DataRow row in dt.AsEnumerable())
-            {
-                yield return row.AsEntity<T>();
-            }
-        }
-
-        /// <summary>
-        /// DataRow => T型Entity への変換メソッド
+        /// DataRow => T型Entity へ変換します（内部向け）
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="dr"> DataRow </param>
+        /// <param name="maps"> マッピングオブジェクトのリスト </param>
         /// <returns> T型Entity </returns>
-        public static T AsEntity<T>(this DataRow dr)
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="FormatException"></exception>
+        /// <exception cref="MissingMethodException"></exception>
+        /// <exception cref="TargetException"></exception>
+        /// <exception cref="MethodAccessException"></exception>
+        /// <exception cref="TargetInvocationException"></exception>
+        internal static T AsEntity<T>(DataRow dr, List<MappingObject> maps)
             where T : new()
         {
             // 戻り値用にT型インスタンスを作成
             var resT = Activator.CreateInstance<T>();
-            bool nullable_flag = false;
 
-            // DataRow(DataTableを一時的に引いて)からカラム名のリストを取得
-            var columnNames = dr.Table.Columns.Cast<DataColumn>()
-                                              .Select(x => x.ColumnName);
-
-            // Entityから全てのPropertyを取得
-            PropertyInfo[] properties = typeof(T).GetProperties();
-
-            foreach (PropertyInfo prop in properties)
+            foreach (var map in maps)
             {
-                // Propertyに紐付いた属性値を取得
-                ColumnAttribute column_atrb =
-                    prop.GetCustomAttribute<ColumnAttribute>();
+                // Property関連変数
+                PropertyInfo prop = typeof(T).GetRuntimeProperty(map.Name);
+                TypeCode p_type_code = Type.GetTypeCode(map.ObjectType);
 
-                // PropertyのTypeCodeを入れるためのローカル変数
-                TypeCode p_type_code = TypeCode.Empty;
+                object db_value = dr[map.MappingKeyName];
 
-                // Nullableの型の時
-                if (prop.PropertyType.Name.Contains("Nullable"))
+                if (db_value != DBNull.Value)
                 {
-                    // GetUnderlyingTypeから型を取得する
-                    Type t_type = Nullable.GetUnderlyingType(prop.PropertyType);
-
-                    p_type_code = Type.GetTypeCode(t_type);
-                    // Nullableフラグを立てる
-                    nullable_flag = true;
-                }
-                else
-                {
-                    // Nullableの型でないときは普通にPropertyTypeから取得
-                    p_type_code = Type.GetTypeCode(prop.PropertyType);
-                }
-
-                // カラム属性値が設定されていない、またはカラム属性値に対応するカラムが存在しない場合
-                // Propertyは、Property名からデータの取得を試みる
-                if (column_atrb == null || (!columnNames.Contains(column_atrb.Name)))
-                {
-                    // カラム名の中にProperty名が含まれている時
-                    if (columnNames.Contains(prop.Name))
-                    {
-                        object db_value = dr[prop.Name];
-
-                        // DataRowの中から値を取得して、DBNullでない時
-                        if (db_value != DBNull.Value)
-                        {
-                            object value = db_value.ConvertValue(p_type_code);
-                            // 戻り値用のオブジェクトに詰め込む
-                            prop.SetValue(resT, value);
-                        }
-                        else
-                        {
-                            // DataRowの中から値を取得して、DBNullの時で
-                            // Propertyの型がStringのときだけString.Emptyを書き込み
-                            if (p_type_code == TypeCode.String)
-                            {
-                                prop.SetValue(resT, string.Empty);
-                            } 
-                            else if (nullable_flag)
-                            {
-                                prop.SetValue(resT, null);
-                            }
-                        }
-                    }
-                }
-                else if (dr[column_atrb.Name] != DBNull.Value)
-                {
-                    // カラム属性値に対応したフィールドがDBNullでない場合
-                    // （カラム属性値はcolumnNamesの中に存在していることは確定済み）
-
                     // カラムの型を取得
-                    Type column_type = dr.Table.Columns[column_atrb.Name].DataType;
+                    Type column_type = dr.Table.Columns[map.MappingKeyName].DataType;
 
                     // カラムの型がNullableなら
                     if (column_type.Name.Contains("Nullable"))
@@ -120,30 +59,36 @@ namespace Enjaxel.Conversion
                         column_type = Nullable.GetUnderlyingType(column_type);
                     }
 
+                    TypeCode c_type_code = Type.GetTypeCode(column_type);
+
                     // ↓EntityのPropertyにDataRowの値をセットする↓
                     // Propertyの型がStringだが、カラムの型がString以外の時
                     if (p_type_code == TypeCode.String &&
-                             column_type.Name != "String")
+                        c_type_code != TypeCode.String)
                     {
                         // String型に変換して値を詰める
-                        prop.SetValue(resT, dr.Field<string>(column_atrb.Name));
+                        prop.SetValue(resT, dr.Field<string>(map.MappingKeyName));
+                    }
+                    else if (p_type_code == c_type_code)
+                    {
+                        // Propertyの型とカラムの型が同一なら無変換
+                        prop.SetValue(resT, db_value);
                     }
                     else
                     {
-                        // それ以外のときは普通に詰め込む
-                        prop.SetValue
-                            (resT, dr[column_atrb.Name].ConvertValue(p_type_code));
-                    } 
+                        // Propertyの型とカラムの型が違うなら変換する
+                        prop.SetValue(resT, db_value.ConvertValue(p_type_code));
+                    }
                 }
-                else if (dr[column_atrb.Name] == DBNull.Value)
+                else
                 {
                     // DataRowの中から値を取得して、DBNullの時で
                     // Propertyの型がStringのときだけString.Emptyを書き込み
                     if (p_type_code == TypeCode.String)
                     {
                         prop.SetValue(resT, string.Empty);
-                    }  
-                    else if (nullable_flag)
+                    }
+                    else if (map.IsNullable)
                     {
                         prop.SetValue(resT, null);
                     }
@@ -157,95 +102,127 @@ namespace Enjaxel.Conversion
         }
 
         /// <summary>
-        /// IEnumerable(Of T型Entity) => DataTable への変換メソッド
+        /// DataRow => T型Entity へ変換します
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
-        /// <param name="tList"> Entityのリスト </param>
-        /// <returns> DataTable </returns>
-        public static DataTable AsDataTable<T>(this IEnumerable<T> tList)
+        /// <param name="dr"> DataRow </param>
+        /// <returns> T型Entity </returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="FormatException"></exception>
+        /// <exception cref="MissingMethodException"></exception>
+        /// <exception cref="TargetException"></exception>
+        /// <exception cref="MethodAccessException"></exception>
+        /// <exception cref="TargetInvocationException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        /// <exception cref="FailedMappingException"></exception>
+        public static T AsEntity<T>(this DataRow dr)
             where T : new()
         {
-            var table = new DataTable();
+            // DataRow(DataTableを一時的に引いて)からカラム名のリストを取得
+            var columnNames = dr.Table.Columns.Cast<DataColumn>()
+                                              .Select(x => x.ColumnName);
+            // Entityから全てのPropertyを取得
             PropertyInfo[] properties = typeof(T).GetProperties();
 
-            // EntityのListに何も入っていなければ終了
-            if (tList.Count() == 0)
-            {
-                return table;
-            }
+            List<MappingObject> maps = GetMappingObjects(properties, columnNames);
 
-            // TableにDataColumnをセット
-            table.Columns.AddRange(tList.First().AsDataColumns());
-
-            foreach (T item in tList)
-            {
-                // DataTableにDataRowを追加
-                table.Rows.Add(item.AsDataRow(ref table));
-            }
-
-            return table;
+            return AsEntity<T>(dr, maps);
         }
 
         /// <summary>
-        /// T型EntityからDataColumunの配列を作成するメソッド
+        /// DataTable => IEnumerable&lt;T型Entity&gt; へ変換します
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
-        /// <param name="entity"> T型Entity </param>
-        /// <returns> DataColumn </returns>
-        public static DataColumn[] AsDataColumns<T>(this T entity)
+        /// <param name="dt"> DBから取得したDataTable </param>
+        /// <returns> Entityのリスト </returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="FormatException"></exception>
+        /// <exception cref="MissingMethodException"></exception>
+        /// <exception cref="TargetException"></exception>
+        /// <exception cref="MethodAccessException"></exception>
+        /// <exception cref="TargetInvocationException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        /// <exception cref="FailedMappingException"></exception>
+        public static IEnumerable<T> AsEnumerable<T>(this DataTable dt)
             where T : new()
         {
-            // ローカル変数の準備
-            var columns = new DataColumn[0];
-            PropertyInfo[] properties = typeof(T).GetProperties();
-
-            foreach (PropertyInfo prop in properties)
+            if (dt == null || dt.Rows.Count == 0)
             {
-                // Propertyに紐付いた属性値を取得
-                ColumnAttribute column_atrb =
-                    prop.GetCustomAttribute<ColumnAttribute>();
-
-                // Propertyの型を入れるためのローカル変数
-                Type p_type = null;
-
-                // Nullableの型の時
-                if (prop.PropertyType.Name.Contains("Nullable"))
-                {
-                    // GetUnderlyingTypeから型を取得する
-                    p_type = Nullable.GetUnderlyingType(prop.PropertyType);
-                }
-                else
-                {
-                    // Nullableの型でないときは普通にPropertyTypeから取得
-                    p_type = prop.PropertyType;
-                }
-
-                // カラム属性値がNullでない場合、カラム属性値をカラム名にする
-                // そうでない場合はProperty名をカラム名にする
-                var col = new DataColumn(column_atrb?.Name ?? prop.Name, p_type);
-
-                // 配列に詰め込み
-                Array.Resize(ref columns, columns.Length + 1);
-                columns[columns.Length - 1] = col;
+                yield return Activator.CreateInstance<T>();
+                yield break;
             }
 
-            return columns;
+            // DataRow(DataTableを一時的に引いて)からカラム名のリストを取得
+            var columnNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName);
+            // Entityから全てのPropertyを取得
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            List<MappingObject> maps = GetMappingObjects(properties, columnNames);
+
+            // Rowの全行をT型Entityに変換
+            foreach (DataRow row in dt.Rows)
+            {
+                yield return AsEntity<T>(row, maps);
+            }
+        }
+        #endregion
+
+        #region T型EntityからDataSetを生成
+        /// <summary>
+        /// T型Entity => DataRow へ変換します（内部向け）
+        /// </summary>
+        /// <typeparam name="T"> Entityの型 </typeparam>
+        /// <param name="entity"> Entity </param>
+        /// <param name="maps"> MappingObjectのリスト </param>
+        /// <param name="dt"> DataTable </param>
+        /// <returns> DataRow </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        internal static DataRow AsDataRow<T>
+            (T entity, List<MappingObject> maps, ref DataTable dt) where T : new()
+        {
+            DataRow row = dt.NewRow();
+
+            foreach (var map in maps)
+            {
+                PropertyInfo prop = typeof(T).GetRuntimeProperty(map.Name);
+                row[map.MappingKeyName] = prop.GetValue(entity) ?? DBNull.Value;
+            }
+
+            return row;
         }
 
         /// <summary>
-        /// T型Entity => DataRow への変換メソッド
+        /// T型Entity => DataRow へ変換します
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="entity"> Entity </param>
         /// <param name="dt"> DataTable </param>
         /// <returns> DataRow </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
         public static DataRow AsDataRow<T>(this T entity, ref DataTable dt)
             where T : new()
         {
             DataRow row = dt.NewRow();
             PropertyInfo[] properties = typeof(T).GetProperties();
 
-            foreach (PropertyInfo prop in properties)
+            foreach (var prop in properties)
             {
                 // Propertyに紐付いた属性値を取得
                 ColumnAttribute column_atrb =
@@ -268,26 +245,128 @@ namespace Enjaxel.Conversion
         }
 
         /// <summary>
-        /// T型EntityからSqlParameterの配列を作成するメソッド
+        /// Propertyの属性からDataColumunの配列を作成します
+        /// </summary>
+        /// <param name="properties"> Property情報 </param>
+        /// <returns> DataColumn </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        public static DataColumn[] AsDataColumns(this PropertyInfo[] properties)
+        {
+            // ローカル変数の準備
+            var columns = new DataColumn[properties.Length];
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                // Propertyに紐付いた属性値を取得
+                ColumnAttribute column_atrb =
+                    properties[i].GetCustomAttribute<ColumnAttribute>();
+
+                // カラム属性値がNullでない場合、カラム属性値をカラム名にする
+                // そうでない場合はProperty名をカラム名にする
+                var col = new DataColumn(column_atrb?.Name ?? properties[i].Name,
+                                         properties[i].PropertyType);
+
+                // 配列に詰め込み
+                columns[i] = col;
+            }
+
+            return columns;
+        }
+
+        /// <summary>
+        /// T型EntityからDataColumunの配列を作成します
+        /// </summary>
+        /// <typeparam name="T"> Entityの型 </typeparam>
+        /// <param name="entity"> T型Entity </param>
+        /// <returns> DataColumn </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        public static DataColumn[] AsDataColumns<T>(this T entity)
+            where T : new()
+        {
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            return properties.AsDataColumns();
+        }
+
+        /// <summary>
+        /// IEnumerable&lt;T型Entity&gt; => DataTable へ変換します
+        /// </summary>
+        /// <typeparam name="T"> Entityの型 </typeparam>
+        /// <param name="tList"> Entityのリスト </param>
+        /// <returns> DataTable </returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="InvalidCastException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        /// <exception cref="ConstraintException"></exception>
+        /// <exception cref="NoNullAllowedException"></exception>
+        /// <exception cref="FailedMappingException"></exception>
+        public static DataTable AsDataTable<T>(this IEnumerable<T> tList)
+            where T : new()
+        {
+            var table = new DataTable();
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            // EntityのListに何も入っていなければ終了
+            if (tList.Count() == 0)
+            {
+                return table;
+            }
+
+            // TableにDataColumnをセット
+            table.Columns.AddRange(properties.AsDataColumns());
+
+            var column_names = table.Columns.Cast<DataColumn>()
+                                            .Select(x => x.ColumnName);
+            List<MappingObject> maps = GetMappingObjects(properties, column_names);
+
+            foreach (T item in tList)
+            {
+                // DataTableにDataRowを追加
+                table.Rows.Add(AsDataRow(item, maps, ref table));
+            }
+
+            return table;
+        }
+        #endregion
+
+        #region T型EntityからSqlParameterを生成
+        /// <summary>
+        /// T型EntityからSqlParameterの配列を作成します
         /// </summary>
         /// <typeparam name="T"> Entityの型 </typeparam>
         /// <param name="entity"> T型Entity </param>
         /// <returns> SqlCommandのバインド向けSqlParameter配列 </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
         public static SqlParameter[] AsSqlParameters<T>(this T entity)
             where T : new()
         {
-            var resPrms = new SqlParameter[0];
             PropertyInfo[] properties = typeof(T).GetProperties();
+            var resPrms = new SqlParameter[properties.Length];
 
-            foreach (PropertyInfo prop in properties)
+            for (var i = 0; i < properties.Length; i++)
             {
                 // Propertyに紐付いた属性値を取得
                 ColumnAttribute column_atrb =
-                    prop.GetCustomAttribute<ColumnAttribute>();
+                    properties[i].GetCustomAttribute<ColumnAttribute>();
 
                 object value = new object();
-                Type v_type = prop.PropertyType;
-                dynamic prop_value = prop.GetValue(entity);
+                Type v_type = properties[i].PropertyType;
+                dynamic prop_value = properties[i].GetValue(entity);
 
                 // Nullableの型の場合
                 if (v_type.Name.Contains("Nullable"))
@@ -303,16 +382,85 @@ namespace Enjaxel.Conversion
 
                 var param = new SqlParameter()
                 {
-                    ParameterName = "@" + column_atrb?.Name ?? prop.Name,
+                    ParameterName = "@" + column_atrb?.Name ?? properties[i].Name,
                     Value = value
                 };
 
                 // 配列に詰め込み
-                Array.Resize(ref resPrms, resPrms.Length + 1);
-                resPrms[resPrms.Length - 1] = param;
+                resPrms[i] = param;
             }
 
             return resPrms;
         }
+        #endregion
+
+        #region privateメソッド
+        /// <summary>
+        /// Property情報とカラム名の一覧からMappingObjectのリストを生成します
+        /// </summary>
+        /// <param name="properties"> Property情報 </param>
+        /// <param name="columnNames"> カラム名の一覧 </param>
+        /// <returns> MappingObjectのリスト </returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="OverflowException"></exception>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        /// <exception cref="TypeLoadException"></exception>
+        /// <exception cref="FailedMappingException"></exception>
+        private static List<MappingObject> GetMappingObjects
+            (PropertyInfo[] properties, IEnumerable<string> columnNames)
+        {
+            var res_maps = new List<MappingObject>(properties.Length);
+
+            foreach (var prop in properties)
+            {
+                var map = new MappingObject();
+
+                // Propertyに紐付いた属性値を取得
+                ColumnAttribute column_atrb =
+                    prop.GetCustomAttribute<ColumnAttribute>();
+
+                // Nullableの型の時
+                if (prop.PropertyType.Name.Contains("Nullable"))
+                {
+                    // GetUnderlyingTypeから型を取得する
+                    map.ObjectType = Nullable.GetUnderlyingType(prop.PropertyType);
+
+                    // Nullableフラグを立てる
+                    map.IsNullable = true;
+                }
+                else
+                {
+                    // Nullableの型でないときは普通にPropertyTypeから取得
+                    map.ObjectType = prop.PropertyType;
+                }
+
+                if (column_atrb != null && columnNames.Contains(column_atrb.Name))
+                {
+                    // カラム属性値が設定されていて、カラム属性値に対応するカラムが存在する場合
+                    // カラム属性値の値を採用する
+                    map.MappingKeyName = column_atrb.Name;
+                    map.Name = prop.Name;
+                }
+                else if (columnNames.Contains(prop.Name))
+                {
+                    // それ以外の場合で、Property名がカラム名の中にあるときはProperty名を採用
+                    map.MappingKeyName = prop.Name;
+                    map.Name = prop.Name;
+                }
+                else
+                {
+                    // どちらもなければエラー
+                    throw new FailedMappingException
+                        ("DataTableのカラム名に対してマッピングできる対象のプロパティが" +
+                         "存在しません");
+                }
+
+                res_maps.Add(map);
+            }
+
+            return res_maps;
+        }
+        #endregion
     }
 }
