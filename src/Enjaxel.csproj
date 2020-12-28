@@ -61,6 +61,8 @@
     <Compile Include="Communication\NetworkTool.cs" />
     <Compile Include="Communication\Sockets\TCPSocketServerBase.cs" />
     <Compile Include="Communication\Sockets\SocketsEnum.cs" />
+    <Compile Include="Crypto\AES.cs" />
+    <Compile Include="Crypto\PBKDF2.cs" />
     <Compile Include="Forms\WinMsgBox.cs" />
     <Compile Include="Linq\CompareSelector.cs" />
     <Compile Include="Linq\EqualityComparer.cs" />
@@ -110,9 +112,8 @@
     <Compile Include="NotInitializedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ToStringAttribute.cs" />
+    <Compile Include="Threading\ForEachAsync.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Crypto\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
